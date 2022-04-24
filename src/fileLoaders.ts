@@ -1,9 +1,8 @@
 import path from 'path';
 import fsPromise from 'fs/promises';
 import fs from 'fs';
-interface filesData {
-	[key: string]: { name: string; content: string; path: string };
-}
+import { filesData } from './interfaces/filesData';
+
 export const fileLoadData: filesData = {};
 export const initialFileLoad = (...fileNames: string[]) => {
 	fileNames = [...new Set(fileNames)];

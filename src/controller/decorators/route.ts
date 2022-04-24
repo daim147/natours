@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { MetaDataKeys, Methods } from '../enums';
+import { MetaDataKeys, Methods } from '../../enums';
 
 interface RouteHandlerDescriptor extends PropertyDescriptor {
 	value?: RequestHandler;
