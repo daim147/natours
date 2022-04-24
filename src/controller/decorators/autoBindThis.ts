@@ -1,4 +1,3 @@
-// autobind decorator
 export const AutoBindThis = (_: any, __: string, property: PropertyDescriptor) => {
 	let { value, writable, ...object } = property;
 	return {

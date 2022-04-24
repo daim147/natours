@@ -1,11 +1,30 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { getFileLoadData, writeFile } from '../fileLoaders';
-import { controller, get, post, use } from './decorators';
+import {
+	controller,
+	del,
+	get,
+	patch,
+	post,
+	use,
+	createRouterMiddleware,
+	params,
+} from './decorators';
 import { Api } from '../enums';
-import { bodyValidator, paramsValidator } from './middlewares';
+import {
+	bodyValidator,
+	paramsValidator,
+	sampleMiddleware,
+	sampleParamsMiddleware,
+} from './middlewares';
 import { filesData } from '../interfaces/filesData';
 
+//example middleware
+
+//for defining middleware order matter here the execution order is from bottom to top
 @controller(`${Api.start}tours`)
+@createRouterMiddleware(sampleMiddleware)
+@params('id', sampleParamsMiddleware)
 class TourController {
 	get tours(): () => filesData[keyof filesData] {
 		return getFileLoadData('tours');
@@ -13,7 +32,6 @@ class TourController {
 	@get('/')
 	getTours(req: Request, res: Response): void {
 		const { content } = this.tours();
-		console.log('request');
 		const data = JSON.parse(content);
 		res.status(200).json({ status: 'success', results: data.length, data });
 	}
@@ -44,4 +62,9 @@ class TourController {
 		}
 		res.status(200).json({ status: 'success', data: tourData });
 	}
+
+	@patch('/:id')
+	updateTour(req: Request, res: Response): void {}
+	@del('/:id')
+	deleteTour(req: Request, res: Response): void {}
 }

@@ -31,3 +31,18 @@ export const paramsValidator =
 		}
 		next();
 	};
+
+export const sampleMiddleware = (req: Request, res: Response, next: NextFunction) => {
+	console.log('From Controller middleware');
+	next();
+};
+
+export const sampleParamsMiddleware = (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+	params: any
+) => {
+	console.log('HERES COME THE PARAMS MIDDLEWARE', params);
+	next();
+};
