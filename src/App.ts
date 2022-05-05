@@ -1,4 +1,5 @@
 import express, { Express, RequestHandler, Router } from 'express';
+import mongoose from 'mongoose';
 import morgan from 'morgan';
 import path from 'path';
 export class App {
@@ -15,6 +16,15 @@ export class App {
 	}
 	static start(port: number, callBack: () => void) {
 		App.Instance.listen(port, callBack);
+	}
+	static connectDB() {
+		const DB = process.env.DATABASE!.replace('<PASSWORD>', process.env.DATABASE_PASSWORD!)!;
+		mongoose
+			.connect(DB)
+			.then(() => {
+				console.log('Database connection established successfully');
+			})
+			.catch((err) => console.log(err));
 	}
 	static registerRouterMiddleware(
 		path: string,

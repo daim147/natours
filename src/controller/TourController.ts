@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { getFileLoadData, writeFile } from '../fileLoaders';
 import {
 	controller,
 	del,
@@ -17,8 +16,7 @@ import {
 	sampleMiddleware,
 	sampleParamsMiddleware,
 } from './middlewares';
-import { filesData } from '../interfaces/filesData';
-
+import { Tours, tourRequired } from '../model/tourModel';
 //example middleware
 
 //for defining middleware order matter here the execution order is from bottom to top
@@ -26,41 +24,37 @@ import { filesData } from '../interfaces/filesData';
 @createRouterMiddleware(sampleMiddleware)
 @params('id', sampleParamsMiddleware)
 class TourController {
-	get tours(): () => filesData[keyof filesData] {
-		return getFileLoadData('tours');
-	}
 	@get('/')
-	getTours(req: Request, res: Response): void {
-		const { content } = this.tours();
-		const data = JSON.parse(content);
-		res.status(200).json({ status: 'success', results: data.length, data });
+	async getTours(req: Request, res: Response): Promise<void> {
+		try {
+			const data = await Tours.find();
+			res.status(200).json({ status: 'success', results: data.length, data });
+		} catch (error) {
+			res.status(400).json({ status: 'fail', message: error });
+		}
 	}
 
 	@post('/')
-	@use(bodyValidator('duration', 'name', 'difficulty'))
+	@use(bodyValidator(...tourRequired))
 	async postTours(req: Request, res: Response): Promise<void> {
-		const { content, path } = this.tours();
-		const lastTours = JSON.parse(content);
-		const newTours = { id: lastTours.at(-1).id + 1, ...req.body };
-		const stringifyData = JSON.stringify([...lastTours, newTours]);
-		const data = await writeFile(path, stringifyData);
-		const parsed = JSON.parse(data.content);
-		res.status(201).json({ status: 'success', results: parsed });
+		try {
+			const newTour = await Tours.create(req.body);
+			res.status(201).json({ status: 'success', results: newTour });
+		} catch (error) {
+			res.status(400).json({ status: 'fail', message: error });
+		}
 	}
 
 	// @get('/:id/:name?')
 	@get('/:id')
-	@use(paramsValidator('id')) //here we don't need it but just for example'
-	getTour(req: Request, res: Response): void {
-		const { content } = this.tours();
-		const data = JSON.parse(content);
-		const id = +req.params.id;
-		const tourData = data.find((tour: any) => tour.id === id);
-		if (!tourData) {
-			res.status(404).json({ status: '404 Not Found' });
-			return;
+	@use(paramsValidator('id')) //check if there is specified params here we don't need it but just for example'
+	async getTour(req: Request, res: Response): Promise<void> {
+		try {
+			const data = await Tours.findById(req.params.id);
+			res.status(200).json({ status: 'success', data });
+		} catch (error) {
+			res.status(400).json({ status: 'fail', message: error });
 		}
-		res.status(200).json({ status: 'success', data: tourData });
 	}
 
 	@patch('/:id')
