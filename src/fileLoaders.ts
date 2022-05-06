@@ -33,3 +33,6 @@ export const writeFile = async (fileName: string, data: string) => {
 	return read;
 };
 export const getFileLoadData = (key: string) => () => fileLoadData[key];
+// get tours(): () => filesData[keyof filesData] {
+// 	return getFileLoadData('tours');
+// }
