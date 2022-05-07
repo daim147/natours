@@ -36,3 +36,14 @@ export const getFileLoadData = (key: string) => () => fileLoadData[key];
 // get tours(): () => filesData[keyof filesData] {
 // 	return getFileLoadData('tours');
 // }
+
+// const obj = {
+// 	name:'husnaian',
+// 	age:25,
+// 	male:true
+// }
+
+// let key:string = 'ali'
+// type a =  keyof typeof obj
+
+// obj[key as keyof typeof obj]

@@ -1,6 +1,5 @@
-import v8 from 'v8';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-
+import { handleNonFilterProperty } from '../../../utils';
 export const bodyValidator =
 	(required: boolean, ...validators: string[]): RequestHandler =>
 	(req: Request, res: Response, next: NextFunction) => {
@@ -41,29 +40,36 @@ export const paramsValidator =
 		next();
 	};
 
-export const removePropertiesFromQuery =
-	(...removeProperties: string[]): RequestHandler =>
-	(req: Request, res: Response, next: NextFunction) => {
-		const queryDuplicates = v8.deserialize(v8.serialize(req.query));
-		removeProperties.forEach((property) => {
-			delete queryDuplicates[property];
-		});
-		req.filterQuery = queryDuplicates;
-		next();
-	};
-
 export const queryValidator =
-	(...queryNameArray: string[]): RequestHandler =>
+	(filterProperties: string[] = [], nonFilterProperties: string[] = []): RequestHandler =>
 	(req: Request, res: Response, next: NextFunction) => {
-		for (let key in req.filterQuery || req.query) {
-			if (!queryNameArray.includes(key)) {
-				res.status(422).send(`Invalid query params ${key}`);
-				return;
-			}
+		//here I separated nonFilterQueries based on  properties provided from req.query and delete it from req.query
+		if (nonFilterProperties.length) {
+			req.nonFilterQuery = {};
+			nonFilterProperties.forEach((property) => {
+				if (Object.keys(req.query).includes(property)) {
+					console.log(req.query[property]);
+					console.log(typeof req.query[property]);
+					req.query[property] = handleNonFilterProperty(req.query[property]);
+					req.nonFilterQuery[property] = req.query[property];
+					delete req.query[property];
+				}
+			});
 		}
-		const query = req.filterQuery ? 'filterQuery' : 'query';
-		//replacing gte, gt,lte,lt with $operator, in req.filterQuery or req.query
-		req[query] = JSON.parse(JSON.stringify(req[query]).replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`));
+		//here I separated filterQueries based on  properties(of schemas) provided from req.query and delete it from req.query
+		if (filterProperties.length) {
+			req.filterQuery = {};
+			for (let key in req.query) {
+				if (filterProperties.includes(key)) {
+					req.filterQuery[key] = req.query[key];
+					delete req.query[key];
+				}
+			}
+			//replace operators(gte, gt, lte,lt) with $operators
+			req.filterQuery = JSON.parse(
+				JSON.stringify(req.filterQuery).replace(/\b(gte|gt|lte|lt)\b/g, (match: any) => `$${match}`)
+			);
+		}
 		next();
 	};
 export const sampleMiddleware = (req: Request, res: Response, next: NextFunction) => {

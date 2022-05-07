@@ -5,7 +5,6 @@ import {
 	bodyValidator,
 	paramsValidator,
 	queryValidator,
-	removePropertiesFromQuery,
 	sampleMiddleware,
 	sampleParamsMiddleware,
 } from './middlewares';
@@ -18,12 +17,21 @@ import { Tours, tourRequired, tourFields } from '../model/tourModel';
 class TourController {
 	@get('/')
 	//check that query object property should be in schema
-	@use(queryValidator(...tourFields)) //here order matter we need filter query object here so removePropertiesFromQuery should run first order of execution is bottom to top
-	//remove these properties from the query object
-	@use(removePropertiesFromQuery('page', 'sort', 'limit', 'fields'))
+	@use(queryValidator(tourFields, ['sort', 'limit']))
 	async getTours(req: Request, res: Response): Promise<void> {
 		try {
-			const data = await Tours.find(req.filterQuery || req.query);
+			console.log(req.filterQuery);
+			console.log(req.nonFilterQuery);
+			console.log(req.query);
+			let query = Tours.find(req.filterQuery);
+			for (let key in req.nonFilterQuery) {
+				if (key === 'sort') {
+					query = query[key](req.nonFilterQuery[key]);
+				} else if (key === 'limit') {
+					query = query[key](Number(req.nonFilterQuery[key]));
+				}
+			}
+			const data = await query;
 			res.status(200).json({ status: 'success', results: data.length, data });
 		} catch (error) {
 			res.status(400).json({ status: 'fail', message: error });
