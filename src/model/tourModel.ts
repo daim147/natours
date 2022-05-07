@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { tours } from '../interfaces';
-import { getRequiredFromSchemas } from '../../utils';
+import { getFieldsFromSchemas, getRequiredFromSchemas } from '../../utils';
 
 const tourSchema = new mongoose.Schema<tours>({
 	name: {
@@ -9,11 +9,11 @@ const tourSchema = new mongoose.Schema<tours>({
 		unique: true,
 		trim: true,
 	},
-	ratingAverage: {
+	ratingsAverage: {
 		type: Number,
 		default: 5,
 	},
-	ratingQuantity: {
+	ratingsQuantity: {
 		type: Number,
 		default: 0,
 	},
@@ -57,3 +57,4 @@ const tourSchema = new mongoose.Schema<tours>({
 });
 export const Tours = mongoose.model('Tours', tourSchema);
 export const tourRequired: string[] = getRequiredFromSchemas(tourSchema);
+export const tourFields: string[] = getFieldsFromSchemas(tourSchema);

@@ -1,12 +1,12 @@
 import { Types } from 'mongoose';
 export interface tours {
 	name: string;
-	ratingAverage: number;
+	ratingsAverage: number;
 	price: number;
 	duration: number;
 	maxGroupSize: number;
 	difficulty: string;
-	ratingQuantity: number;
+	ratingsQuantity: number;
 	priceDiscount: number;
 	summary: string;
 	description: string;
