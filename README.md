@@ -46,13 +46,15 @@
 
 ## :dart: About
 
-Describe your project
+This project is under development but I am writing my own library for express with the help of TypeScript Decorator, Idea taken from framework like ts-express-decorator but and a little bit from NEST.JS, It will be host in NPM, with the help of this library writing APIs is far way easy and with the help of typescript there the best developer experience. At now library implementation is in project but after completion of project library will be extracted and will host on NPM, Database use with library is MongoDB with Mongoose Driver
 
 ## :sparkles: Features
 
-:Advanced Mongoose Implementation: Feature 1;\
-:My own TypeScript Decorator Framework for Express: Feature 2;\
-:Build APIs rapidly with my own little framework: Feature 3;
+### :Advanced Mongoose Implementation: Feature 1;
+
+### :My own TypeScript Decorator library for Express: Feature 2;
+
+### :Build APIs rapidly with my own little framework: Feature 3;
 
 ## :rocket: Technologies
 
@@ -81,7 +83,7 @@ $ cd natours
 $ yarn
 
 # Run the project
-$ yarn start
+$ yarn start:dev
 
 # The server will initialize in the <http://localhost:3000>
 ```
