@@ -4,38 +4,37 @@ import { Api } from '../enums';
 import {
 	bodyValidator,
 	paramsValidator,
-	queryValidator,
+	urlSearchParamsValidator,
 	sampleMiddleware,
 	sampleParamsMiddleware,
 } from './middlewares';
 import { Tours, tourRequired, tourFields } from '../model/tourModel';
+import { deepClone, objectToUrlParamString, queryWithFilterAndNonFilter } from '../../utils';
 
 //for defining middleware order matter here the execution order is from bottom to top
-@controller(`${Api.start}tours`)
+const rootRoute = `${Api.start}tours`;
+@controller(rootRoute)
 @createRouterMiddleware(sampleMiddleware)
 @params('id', sampleParamsMiddleware)
 class TourController {
 	@get('/')
 	//check that query object property should be in schema
-	@use(queryValidator(tourFields, ['sort', 'limit']))
+	@use(urlSearchParamsValidator(tourFields))
 	async getTours(req: Request, res: Response): Promise<void> {
 		try {
-			console.log(req.filterQuery);
-			console.log(req.nonFilterQuery);
-			console.log(req.query);
-			let query = Tours.find(req.filterQuery);
-			for (let key in req.nonFilterQuery) {
-				if (key === 'sort') {
-					query = query[key](req.nonFilterQuery[key]);
-				} else if (key === 'limit') {
-					query = query[key](Number(req.nonFilterQuery[key]));
-				}
-			}
-			const data = await query;
+			const data = await queryWithFilterAndNonFilter(Tours, req.filterQuery, req.nonFilterQuery);
 			res.status(200).json({ status: 'success', results: data.length, data });
-		} catch (error) {
-			res.status(400).json({ status: 'fail', message: error });
+		} catch (error: any) {
+			res.status(400).json({ status: 'fail', message: error.message });
 		}
+	}
+
+	@get('/top-5-cheap')
+	async getTop5Cheap(req: Request, res: Response): Promise<void> {
+		req.query.limit ||= '5';
+		req.query.sort ||= '-ratingsAverage,price';
+		const query = deepClone(req.query);
+		res.redirect(`${rootRoute}?${objectToUrlParamString(query)}`);
 	}
 
 	@post('/')

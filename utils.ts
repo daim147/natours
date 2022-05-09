@@ -1,4 +1,5 @@
-import { SchemaType } from 'mongoose';
+import { SchemaType, Model } from 'mongoose';
+import { Query } from 'express-serve-static-core';
 
 export const getRequiredFromSchemas = <T extends { paths: { [key: string]: SchemaType<any> } }>(
 	schema: T
@@ -47,4 +48,30 @@ export const handleNonFilterProperty = <T>(value: T) => {
 		return value.split(',').join(' ');
 	}
 	return value;
+};
+
+export const objectToUrlParamString = <T extends { [key: string]: any }>(obj: T): string =>
+	new URLSearchParams(obj).toString();
+
+export const deepClone = (obj: Object): Object => JSON.parse(JSON.stringify(obj));
+
+export const queryWithFilterAndNonFilter = <T extends Model<any, {}, {}, {}>>(
+	model: T,
+	filterQuery: Query,
+	nonFilterQuery: Query
+) => {
+	let query = model.find(filterQuery);
+	for (let key in nonFilterQuery) {
+		if (key === 'sort') {
+			query = query[key](nonFilterQuery[key]);
+		} else if (key === 'limit') {
+			query = query[key](Number(nonFilterQuery[key]));
+		} else if (key === 'select') {
+			query = query[key](nonFilterQuery[key]);
+		} else if (key === 'page') {
+			const skip = (Number(nonFilterQuery[key]) - 1) * (Number(nonFilterQuery['limit']) || 1);
+			query = query.skip(skip);
+		}
+	}
+	return query;
 };

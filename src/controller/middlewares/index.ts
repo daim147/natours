@@ -40,16 +40,17 @@ export const paramsValidator =
 		next();
 	};
 
-export const queryValidator =
-	(filterProperties: string[] = [], nonFilterProperties: string[] = []): RequestHandler =>
+export const urlSearchParamsValidator =
+	(
+		filterProperties: string[] = [],
+		nonFilterProperties: string[] = ['sort', 'limit', 'select', 'page']
+	): RequestHandler =>
 	(req: Request, res: Response, next: NextFunction) => {
 		//here I separated nonFilterQueries based on  properties provided from req.query and delete it from req.query
 		if (nonFilterProperties.length) {
 			req.nonFilterQuery = {};
-			nonFilterProperties.forEach((property) => {
-				if (Object.keys(req.query).includes(property)) {
-					console.log(req.query[property]);
-					console.log(typeof req.query[property]);
+			Object.keys(req.query).forEach((property) => {
+				if (nonFilterProperties.includes(property)) {
 					req.query[property] = handleNonFilterProperty(req.query[property]);
 					req.nonFilterQuery[property] = req.query[property];
 					delete req.query[property];
