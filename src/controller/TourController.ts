@@ -12,8 +12,8 @@ import {
 import { Tours, tourRequired, tourFields } from '../model/tourModel';
 import { objectToUrlParamString, queryWithNonFilter } from '../../utils';
 
-//for defining middleware order matter here the execution order is from bottom to top
 const rootRoute = `${Api.start}tours`;
+//for defining middleware order matter here the execution order is from bottom to top
 @controller(rootRoute)
 @createRouterMiddleware(sampleMiddleware)
 @params('id', sampleParamsMiddleware)
@@ -31,8 +31,7 @@ class TourController {
 	}
 
 	@post('/')
-	//when pass true and value all the value should present in the body
-	@use(bodyValidator(true, ...tourRequired))
+	@use(bodyValidator(true, ...tourRequired)) //when pass true and value all the value should present in the body
 	async postTours(req: Request, res: Response): Promise<void> {
 		try {
 			const newTour = await Tours.create(req.body);
@@ -43,8 +42,7 @@ class TourController {
 	}
 
 	@patch('/:id')
-	//when pass false and value every body properties should be in values
-	@use(bodyValidator(false, ...tourFields))
+	@use(bodyValidator(false, ...tourFields)) //when pass false and value every body properties should be in values
 	async updateTour(req: Request, res: Response): Promise<void> {
 		try {
 			const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
@@ -175,9 +173,10 @@ class TourController {
 	async getTour(req: Request, res: Response): Promise<void> {
 		try {
 			const data = await queryWithNonFilter(Tours.findById(req.params.id), req.nonFilterQuery);
+			if (!data) throw new Error('No Record Found');
 			res.status(200).json({ status: 'success', data });
-		} catch (error) {
-			res.status(400).json({ status: 'fail', message: error });
+		} catch (error: any) {
+			res.status(400).json({ status: 'fail', message: error.message });
 		}
 	}
 }

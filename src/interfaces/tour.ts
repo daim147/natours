@@ -15,4 +15,6 @@ export interface tours {
 	createdAt: Date;
 	startDates: Date[];
 	_id: Types.ObjectId;
+	slug: string;
+	secretTour: boolean;
 }
