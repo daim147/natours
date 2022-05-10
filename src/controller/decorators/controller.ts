@@ -7,12 +7,10 @@ export function controller(pathPrefix: string) {
 		//First create router (express.Router for every controller)
 		const router = App.createRouter();
 		//Then get the middlewares register for controller
-		const controllerMiddlewares =
-			Reflect.getMetadata(MetaDataKeys.middleware, target.prototype) || [];
+		const controllerMiddlewares = Reflect.getMetadata(MetaDataKeys.middleware, target.prototype) || [];
 
 		//Then check for the params middleware
-		const params: paramsMiddleware[] =
-			Reflect.getMetadata(MetaDataKeys.params, target.prototype) || [];
+		const params: paramsMiddleware[] = Reflect.getMetadata(MetaDataKeys.params, target.prototype) || [];
 		params.length &&
 			params.forEach(({ param, middleware }) => {
 				router.param(param, middleware);

@@ -24,13 +24,12 @@ export class App {
 			.then(() => {
 				console.log('Database connection established successfully');
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => {
+				console.log(err);
+				process.exit(1);
+			});
 	}
-	static registerRouterMiddleware(
-		path: string,
-		middlewares: RequestHandler[] = [],
-		handler: RequestHandler
-	): void {
+	static registerRouterMiddleware(path: string, middlewares: RequestHandler[] = [], handler: RequestHandler): void {
 		App.Instance.use(path, ...middlewares, handler);
 	}
 	static createRouter(): Router {

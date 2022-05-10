@@ -1,4 +1,4 @@
-import { SchemaType, Model } from 'mongoose';
+import { SchemaType, Query as MongooseQuery } from 'mongoose';
 import { Query } from 'express-serve-static-core';
 
 export const getRequiredFromSchemas = <T extends { paths: { [key: string]: SchemaType<any> } }>(
@@ -36,9 +36,11 @@ export const checkTypeFromStringify = (value: string): type => {
 	}
 };
 
+export const isStringArray = (array: any[]) => array.every((val) => typeof val === 'string');
+
 export const handleNonFilterProperty = <T>(value: T) => {
 	if (Array.isArray(value)) {
-		const stringArray = value.every((val) => typeof val === 'string');
+		const stringArray = isStringArray(value);
 		if (stringArray) {
 			return value.join(' ');
 		} else {
@@ -55,12 +57,7 @@ export const objectToUrlParamString = <T extends { [key: string]: any }>(obj: T)
 
 export const deepClone = (obj: Object): Object => JSON.parse(JSON.stringify(obj));
 
-export const queryWithFilterAndNonFilter = <T extends Model<any, {}, {}, {}>>(
-	model: T,
-	filterQuery: Query,
-	nonFilterQuery: Query
-) => {
-	let query = model.find(filterQuery);
+export const queryWithNonFilter = <T extends MongooseQuery<any, {}, {}, {}>>(query: T, nonFilterQuery: Query) => {
 	for (let key in nonFilterQuery) {
 		if (key === 'sort') {
 			query = query[key](nonFilterQuery[key]);
