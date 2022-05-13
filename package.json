@@ -7,7 +7,7 @@
 		"start:build": "tsc -w",
 		"start:run:dev": "NODE_ENV=development nodemon build/index.js",
 		"start:run:prod": "NODE_ENV=production nodemon build/index.js",
-		"debug": "concurrently 'npm run start:build' 'ndb build/index.js'",
+		"debug": "ndb index.ts",
 		"start:dev": "concurrently 'npm run start:build' 'npm run start:run:dev'",
 		"start:prod": "concurrently 'npm run start:build' 'npm run start:run:prod'"
 	},

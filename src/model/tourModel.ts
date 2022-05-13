@@ -13,7 +13,7 @@ const tourSchema = new mongoose.Schema<tours>(
 			trim: true,
 			maxlength: [40, '{VALUE} is InValid. Tour name must be at less than or equal to 40 characters'],
 			minlength: [10, '{VALUE} is InValid. Tour name must be at least 10 characters'],
-			validate: [validator.isAlpha, '{PATH} should always be Alpha(a-z/A-Z) but got {VALUE} '],
+			// validate: [validator.isAlpha, '{PATH} should always be Alpha(a-z/A-Z) but got {VALUE} '],
 		},
 		ratingsAverage: {
 			type: Number,

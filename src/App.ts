@@ -12,9 +12,11 @@ import morgan from 'morgan';
 import path from 'path';
 import jsend from 'jsend';
 import { CustomError } from './interfaces';
+import { Server } from 'http';
 export class App {
 	private static inst: Express;
 	private constructor() {}
+	static server: Server;
 	static get Instance(): typeof App.inst {
 		if (!App.inst) {
 			App.inst = express();
@@ -26,19 +28,13 @@ export class App {
 		return App.inst;
 	}
 	static start(port: number, callBack: () => void) {
-		App.Instance.listen(port, callBack);
+		App.server = App.Instance.listen(port, callBack);
 	}
 	static connectDB() {
 		const DB = process.env.DATABASE!.replace('<PASSWORD>', process.env.DATABASE_PASSWORD!)!;
-		mongoose
-			.connect(DB)
-			.then(() => {
-				console.log('Database connection established successfully');
-			})
-			.catch((err) => {
-				console.log(err);
-				process.exit(1);
-			});
+		mongoose.connect(DB).then(() => {
+			console.log('Database connection established successfully');
+		});
 	}
 	static registerMiddleware(
 		middleWareMethod: keyof Express,
@@ -50,15 +46,5 @@ export class App {
 	}
 	static createRouter(): Router {
 		return express.Router();
-	}
-	static notFoundHandler(req: Request, res: Response) {
-		res.jsend.error({
-			code: 404,
-			message: `Can't find the requested url ${req.originalUrl}`,
-		});
-	}
-	static errorHandler(err: CustomError, _: Request, res: Response, next: NextFunction) {
-		err = new CustomError(err);
-		res.status(err.statusCode).jsend[err.status](err.message);
 	}
 }

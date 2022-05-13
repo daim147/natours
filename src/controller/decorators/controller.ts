@@ -18,7 +18,12 @@ export function controller(pathPrefix: string) {
 		//Then iterate through the methods in controller
 		for (let key in target.prototype) {
 			// First get the method
-			const routeHandler = target.prototype[key].bind(target.prototype);
+			let routeHandler = target.prototype[key].bind(target.prototype);
+			//Then get error handler
+			const errorHandler = Reflect.getMetadata(MetaDataKeys.errorHandler, target.prototype, key);
+			if (errorHandler) {
+				routeHandler = errorHandler(routeHandler);
+			}
 			//Then get the the path of which method is bound
 			const path = Reflect.getMetadata(MetaDataKeys.path, target.prototype, key);
 			// Then get the http method bound to controller method

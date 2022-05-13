@@ -3,4 +3,5 @@ export enum MetaDataKeys {
 	method = 'Methods',
 	middleware = 'Middleware',
 	params = 'Params',
+	errorHandler = 'ErrorHandler',
 }
