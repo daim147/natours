@@ -1,7 +1,17 @@
-import express, { Express, RequestHandler, Router } from 'express';
+import express, {
+	Express,
+	RequestHandler,
+	Router,
+	Request,
+	Response,
+	NextFunction,
+	ErrorRequestHandler,
+} from 'express';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import path from 'path';
+import jsend from 'jsend';
+import { CustomError } from './interfaces';
 export class App {
 	private static inst: Express;
 	private constructor() {}
@@ -11,6 +21,7 @@ export class App {
 			App.inst.use(morgan('dev'));
 			App.inst.use(express.json());
 			App.inst.use(express.static(path.join(__dirname, '../public')));
+			App.inst.use(jsend.middleware);
 		}
 		return App.inst;
 	}
@@ -29,10 +40,25 @@ export class App {
 				process.exit(1);
 			});
 	}
-	static registerRouterMiddleware(path: string, middlewares: RequestHandler[] = [], handler: RequestHandler): void {
-		App.Instance.use(path, ...middlewares, handler);
+	static registerMiddleware(
+		middleWareMethod: keyof Express,
+		handler: RequestHandler | ErrorRequestHandler,
+		path?: string,
+		middlewares?: RequestHandler[]
+	): void {
+		App.Instance[middleWareMethod](path || '', ...(middlewares || []), handler);
 	}
 	static createRouter(): Router {
 		return express.Router();
+	}
+	static notFoundHandler(req: Request, res: Response) {
+		res.jsend.error({
+			code: 404,
+			message: `Can't find the requested url ${req.originalUrl}`,
+		});
+	}
+	static errorHandler(err: CustomError, _: Request, res: Response, next: NextFunction) {
+		err = new CustomError(err);
+		res.status(err.statusCode).jsend[err.status](err.message);
 	}
 }

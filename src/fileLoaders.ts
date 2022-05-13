@@ -3,6 +3,9 @@ import fsPromise from 'fs/promises';
 import fs from 'fs';
 import { filesData } from './interfaces/filesData';
 
+//use to initialize the filesData
+//!initialFileLoad(path.join(__dirname, '../dev-data/data/tours.json'));
+
 export const fileLoadData: filesData = {};
 export const initialFileLoad = (...fileNames: string[]) => {
 	fileNames = [...new Set(fileNames)];
@@ -33,17 +36,7 @@ export const writeFile = async (fileName: string, data: string) => {
 	return read;
 };
 export const getFileLoadData = (key: string) => () => fileLoadData[key];
+
 // get tours(): () => filesData[keyof filesData] {
 // 	return getFileLoadData('tours');
 // }
-
-// const obj = {
-// 	name:'husnaian',
-// 	age:25,
-// 	male:true
-// }
-
-// let key:string = 'ali'
-// type a =  keyof typeof obj
-
-// obj[key as keyof typeof obj]

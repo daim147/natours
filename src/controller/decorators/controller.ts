@@ -31,6 +31,6 @@ export function controller(pathPrefix: string) {
 			}
 		}
 		// Then bind router with app (express.use())
-		App.registerRouterMiddleware(pathPrefix, controllerMiddlewares, router);
+		App.registerMiddleware('use', router, pathPrefix, controllerMiddlewares);
 	};
 }

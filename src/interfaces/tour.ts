@@ -7,13 +7,13 @@ export interface tours {
 	maxGroupSize: number;
 	difficulty: string;
 	ratingsQuantity: number;
-	priceDiscount: number;
+	priceDiscount?: number;
 	summary: string;
-	description: string;
+	description?: string;
 	imageCover: string;
-	images: string[];
+	images?: Types.Array<string>;
 	createdAt: Date;
-	startDates: Date[];
+	startDates?: Types.Array<Date>;
 	_id: Types.ObjectId;
 	slug: string;
 	secretTour: boolean;

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import url from 'url';
 import { controller, del, get, patch, post, use, createRouterMiddleware, params } from './decorators';
 import { Api } from '../enums';
@@ -11,6 +11,7 @@ import {
 } from './middlewares';
 import { Tours, tourRequired, tourFields } from '../model/tourModel';
 import { objectToUrlParamString, queryWithNonFilter } from '../../utils';
+import { CustomError } from '../interfaces';
 
 const rootRoute = `${Api.start}tours`;
 //for defining middleware order matter here the execution order is from bottom to top
@@ -23,10 +24,13 @@ class TourController {
 	@use(urlSearchParamsValidator(tourFields))
 	async getTours(req: Request, res: Response): Promise<void> {
 		try {
-			const data = await queryWithNonFilter(Tours.find(req.filterQuery), req.nonFilterQuery);
-			res.status(200).json({ status: 'success', results: data.length, data });
+			const tours = await queryWithNonFilter(Tours.find(req.filterQuery), req.nonFilterQuery);
+			res.status(200).jsend.success({ count: tours.length, result: tours });
 		} catch (error: any) {
-			res.status(400).json({ status: 'fail', message: error.message });
+			res.status(404).jsend.error({
+				code: 404,
+				message: error.message,
+			});
 		}
 	}
 
@@ -35,9 +39,12 @@ class TourController {
 	async postTours(req: Request, res: Response): Promise<void> {
 		try {
 			const newTour = await Tours.create(req.body);
-			res.status(201).json({ status: 'success', results: newTour });
+			res.status(201).jsend.success({ result: newTour });
 		} catch (error: any) {
-			res.status(400).json({ status: 'fail', message: error.message });
+			res.status(404).jsend.error({
+				code: 404,
+				message: error.message,
+			});
 		}
 	}
 
@@ -52,18 +59,27 @@ class TourController {
 			if (!tour) {
 				throw new Error('Invalid Id');
 			}
-			res.status(200).json({ status: 'success', data: { tour } });
+			res.status(200).jsend.success({ result: tour });
 		} catch (error: any) {
-			res.status(400).json({ status: 'fail', message: error.message });
+			res.status(404).jsend.error({
+				code: 404,
+				message: error.message,
+			});
 		}
 	}
 	@del('/:id')
 	async deleteTour(req: Request, res: Response): Promise<void> {
 		try {
 			const tour = await Tours.findByIdAndDelete(req.params.id);
-			res.status(204).json({ status: 'success', data: { tour } });
+			if (!tour) {
+				throw new Error('Tour not found');
+			}
+			res.status(204).jsend.success({ result: { _id: tour._id } });
 		} catch (error: any) {
-			res.status(404).json({ status: 'fail', message: error.message });
+			res.status(404).jsend.error({
+				code: 404,
+				message: error.message,
+			});
 		}
 	}
 	@get('/top-5-cheap')
@@ -96,9 +112,12 @@ class TourController {
 					$sort: { avgPrice: 1 },
 				},
 			]);
-			res.status(200).json({ status: 'success', data: { stats } });
+			res.status(200).jsend.success({ count: stats.length, result: stats });
 		} catch (error: any) {
-			res.status(404).json({ status: 'fail', message: error.message });
+			res.status(404).jsend.error({
+				code: 404,
+				message: error.message,
+			});
 		}
 	}
 
@@ -160,9 +179,12 @@ class TourController {
 					},
 				},
 			]);
-			res.status(200).json({ status: 'success', results: monthly.length, data: { monthly } });
+			res.status(200).jsend.success({ count: monthly.length, result: monthly });
 		} catch (error: any) {
-			res.status(404).json({ status: 'fail', message: error.message });
+			res.status(404).jsend.error({
+				code: 404,
+				message: error.message,
+			});
 		}
 	}
 	// @get('/:id/:name?')
@@ -170,13 +192,19 @@ class TourController {
 	@get('/:id')
 	@use(urlSearchParamsValidator(tourFields, ['select']))
 	@use(paramsValidator('id')) //check if there is specified params here we don't need it but just for example'
-	async getTour(req: Request, res: Response): Promise<void> {
+	async getTour(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			const data = await queryWithNonFilter(Tours.findById(req.params.id), req.nonFilterQuery);
 			if (!data) throw new Error('No Record Found');
-			res.status(200).json({ status: 'success', data });
+			res.status(200).jsend.success({ result: data });
 		} catch (error: any) {
-			res.status(400).json({ status: 'fail', message: error.message });
+			const err = new CustomError(error.message);
+			err.statusCode = 404;
+			next(err);
+			// res.status(404).jsend.error({
+			// 	code: 404,
+			// 	message: error.message,
+			// });
 		}
 	}
 }

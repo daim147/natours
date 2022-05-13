@@ -1,5 +1,6 @@
 import mongoose, { Aggregate } from 'mongoose';
 import slugify from 'slugify';
+import validator from 'validator';
 import { tours } from '../interfaces';
 import { getFieldsFromSchemas, getRequiredFromSchemas } from '../../utils';
 
@@ -10,10 +11,15 @@ const tourSchema = new mongoose.Schema<tours>(
 			required: [true, 'Name is required'],
 			unique: true,
 			trim: true,
+			maxlength: [40, '{VALUE} is InValid. Tour name must be at less than or equal to 40 characters'],
+			minlength: [10, '{VALUE} is InValid. Tour name must be at least 10 characters'],
+			validate: [validator.isAlpha, '{PATH} should always be Alpha(a-z/A-Z) but got {VALUE} '],
 		},
 		ratingsAverage: {
 			type: Number,
 			default: 5,
+			min: [1, '{VALUE} is InValid. Rating average should be above 1'],
+			max: [5, '{VALUE} is InValid. Rating average should be below 5'],
 		},
 		ratingsQuantity: {
 			type: Number,
@@ -30,12 +36,26 @@ const tourSchema = new mongoose.Schema<tours>(
 		difficulty: {
 			type: String,
 			required: [true, 'Rating is required'],
+			enum: {
+				values: ['easy', 'medium', 'difficult'],
+				message: '{VALUE} is not supported Difficulty should be one of easy, medium, difficult',
+			},
 		},
 		price: {
 			type: Number,
 			required: [true, 'Price is required'],
 		},
-		priceDiscount: Number,
+		priceDiscount: {
+			type: Number,
+			validate: {
+				validator: function (this: tours, value: number): boolean {
+					return value < this.price;
+				},
+				message: function (props) {
+					return `${props.path} should be less than price`;
+				},
+			},
+		},
 		summary: {
 			type: String,
 			trim: true,
@@ -50,7 +70,9 @@ const tourSchema = new mongoose.Schema<tours>(
 			trim: true,
 			required: [true, 'Image cover is required'],
 		},
-		images: [String],
+		images: {
+			type: [String],
+		},
 		createdAt: {
 			type: Date,
 			default: new Date(),
@@ -88,9 +110,10 @@ tourSchema.pre(/^find/, function (this: mongoose.Query<any, any, {}, any>, next)
 	this.find({ secretTour: { $ne: true } });
 	next();
 });
-tourSchema.post('find', function (this: mongoose.Query<any, any, {}, any>, docs, next) {
-	next();
-});
+// tourSchema.post(/^find/, function (this: mongoose.Query<any, any, {}, any>, docs, next) {
+// 	// console.log(docs);
+// 	next();
+// });
 
 //? Aggregation Middleware
 tourSchema.pre('aggregate', function (this: Aggregate<any>, next) {
