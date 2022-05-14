@@ -4,6 +4,7 @@ declare global {
 		interface Request {
 			filterQuery: Query;
 			nonFilterQuery: Query;
+			hiddenBody: { [key: string]: any };
 		}
 	}
 }
