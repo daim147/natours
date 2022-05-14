@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-export interface tours {
+export interface TourInterface {
 	name: string;
 	ratingsAverage: number;
 	price: number;

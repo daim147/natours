@@ -12,6 +12,7 @@
 		"start:prod": "concurrently 'npm run start:build' 'npm run start:run:prod'"
 	},
 	"dependencies": {
+		"bcryptjs": "^2.4.3",
 		"concurrently": "^7.1.0",
 		"dotenv": "^16.0.0",
 		"express": "^4.17.3",
@@ -25,6 +26,7 @@
 		"validator": "^13.7.0"
 	},
 	"devDependencies": {
+		"@types/bcryptjs": "^2.4.2",
 		"@types/express": "^4.17.13",
 		"@types/jsend": "^1.0.29",
 		"@types/morgan": "^1.9.3",

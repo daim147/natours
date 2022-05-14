@@ -1,6 +1,6 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 export const bodyValidator =
-	(required: boolean, ...validators: string[]): RequestHandler =>
+	(required: boolean, validators: string[]): RequestHandler =>
 	(req: Request, res: Response, next: NextFunction) => {
 		if (!req.body) {
 			res.status(422).send('Invalid request');

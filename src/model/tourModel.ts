@@ -1,10 +1,9 @@
 import mongoose, { Aggregate } from 'mongoose';
 import slugify from 'slugify';
-import validator from 'validator';
-import { tours } from '../interfaces';
+import { TourInterface } from '../interfaces';
 import { getFieldsFromSchemas, getRequiredFromSchemas } from '../../utils';
 
-const tourSchema = new mongoose.Schema<tours>(
+const tourSchema = new mongoose.Schema<TourInterface>(
 	{
 		name: {
 			type: String,
@@ -48,7 +47,7 @@ const tourSchema = new mongoose.Schema<tours>(
 		priceDiscount: {
 			type: Number,
 			validate: {
-				validator: function (this: tours, value: number): boolean {
+				validator: function (this: TourInterface, value: number): boolean {
 					return value < this.price;
 				},
 				message: function (props) {
@@ -121,6 +120,6 @@ tourSchema.pre('aggregate', function (this: Aggregate<any>, next) {
 	next();
 });
 
-export const Tours = mongoose.model('Tours', tourSchema);
+export const Tour = mongoose.model('Tour', tourSchema);
 export const tourRequired: string[] = getRequiredFromSchemas(tourSchema);
 export const tourFields: string[] = getFieldsFromSchemas(tourSchema);

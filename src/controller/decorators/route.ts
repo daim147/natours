@@ -1,9 +1,7 @@
 import { RequestHandler } from 'express';
 import { MetaDataKeys, Methods } from '../../enums';
+import { RouteHandlerDescriptor } from '../../interfaces';
 
-interface RouteHandlerDescriptor extends PropertyDescriptor {
-	value?: RequestHandler;
-}
 function routeBinder(method: string) {
 	return function (path: string) {
 		return function (target: any, key: string, desc: RouteHandlerDescriptor) {

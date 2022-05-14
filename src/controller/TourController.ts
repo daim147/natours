@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import url from 'url';
 import { controller, del, get, patch, post, use, error } from './decorators';
-import { Api } from '../enums';
+import { API } from '../enums';
 import { bodyValidator, paramsValidator, urlSearchParamsValidator, catchAsync } from './middlewares';
-import { Tours, tourRequired, tourFields } from '../model/tourModel';
+import { Tour, tourRequired, tourFields } from '../model/tourModel';
 import { objectToUrlParamString, queryWithNonFilter } from '../../utils';
 import { CustomError } from '../interfaces';
 
-const rootRoute = `${Api.start}tours`;
+const rootRoute = `${API.start}tours`;
 //for defining middleware order matter here the execution order is from bottom to top
 // @createRouterMiddleware(sampleMiddleware)
 // @params('id', sampleParamsMiddleware)
@@ -18,21 +18,21 @@ class TourController {
 	//check that query object property should be in schema
 	@use(urlSearchParamsValidator(tourFields))
 	async getTours(req: Request, res: Response): Promise<void> {
-		const tours = await queryWithNonFilter(Tours.find(req.filterQuery), req.nonFilterQuery);
+		const tours = await queryWithNonFilter(Tour.find(req.filterQuery), req.nonFilterQuery);
 		res.status(200).jsend.success({ count: tours.length, result: tours });
 	}
 	@error(catchAsync)
 	@post('/')
-	@use(bodyValidator(true, ...tourRequired)) //when pass true and value all the value should present in the body
+	@use(bodyValidator(true, tourRequired)) //when pass true and value all the value should present in the body
 	async postTours(req: Request, res: Response): Promise<void> {
-		const newTour = await Tours.create(req.body);
+		const newTour = await Tour.create(req.body);
 		res.status(201).jsend.success({ result: newTour });
 	}
 	@error(catchAsync)
 	@patch('/:id')
-	@use(bodyValidator(false, ...tourFields)) //when pass false and value every body properties should be in values
+	@use(bodyValidator(false, tourFields)) //when pass false and value every body properties should be in values
 	async updateTour(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
+		const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
 			new: true,
 			runValidators: true,
 		});
@@ -44,7 +44,7 @@ class TourController {
 	@error(catchAsync)
 	@del('/:id')
 	async deleteTour(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const tour = await Tours.findByIdAndDelete(req.params.id);
+		const tour = await Tour.findByIdAndDelete(req.params.id);
 		if (!tour) {
 			if (!tour) return next(new CustomError('No Record Found', 404));
 		}
@@ -59,7 +59,7 @@ class TourController {
 	@error(catchAsync)
 	@get('/tour-stats')
 	async getTourStats(req: Request, res: Response): Promise<void> {
-		const stats = await Tours.aggregate([
+		const stats = await Tour.aggregate([
 			{
 				$match: {
 					ratingsAverage: { $gte: 2 },
@@ -86,7 +86,7 @@ class TourController {
 	@get('/monthly-plan/:year')
 	async getMonthlyPlan(req: Request, res: Response): Promise<void> {
 		const year = Number(req.params.year);
-		const monthly = await Tours.aggregate([
+		const monthly = await Tour.aggregate([
 			{
 				$unwind: {
 					path: '$startDates',
@@ -149,7 +149,7 @@ class TourController {
 	@use(urlSearchParamsValidator(tourFields, ['select']))
 	@use(paramsValidator('id')) //check if there is specified params here we don't need it but just for example'
 	async getTour(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const data = await queryWithNonFilter(Tours.findById(req.params.id), req.nonFilterQuery);
+		const data = await queryWithNonFilter(Tour.findById(req.params.id), req.nonFilterQuery);
 		if (!data) return next(new CustomError('No Record Found', 404));
 		res.status(200).jsend.success({ result: data });
 	}

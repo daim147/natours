@@ -1,3 +1,3 @@
-export enum Api {
+export enum API {
 	start = '/api/v1/',
 }
