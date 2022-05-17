@@ -1,5 +1,6 @@
 import { SchemaType, Query as MongooseQuery } from 'mongoose';
 import { Query } from 'express-serve-static-core';
+import jwt, { Secret } from 'jsonwebtoken';
 
 export const getRequiredFromSchemas = <T extends { paths: { [key: string]: SchemaType<any> } }>(
 	schema: T
@@ -71,4 +72,20 @@ export const queryWithNonFilter = <T extends MongooseQuery<any, {}, {}, {}>>(que
 		}
 	}
 	return query;
+};
+export const secret: Secret = process.env.JWT_SECRET || 'there_is_no_secret';
+export const signToken = <T>(id: T) =>
+	jwt.sign({ id }, secret, {
+		expiresIn: process.env.JWT_EXPIRATION,
+	});
+export const verifyToken = <T>(token: string, secret: Secret): Promise<T> => {
+	return new Promise((resolve, reject) => {
+		jwt.verify(token, secret, (err, decode) => {
+			if (!err) {
+				resolve(decode as T);
+			} else {
+				reject(err);
+			}
+		});
+	});
 };

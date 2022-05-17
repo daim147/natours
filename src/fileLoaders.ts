@@ -1,7 +1,7 @@
 import path from 'path';
 import fsPromise from 'fs/promises';
 import fs from 'fs';
-import { filesData } from './interfaces/filesData';
+import { filesData } from './interfaces';
 
 //use to initialize the filesData
 //!initialFileLoad(path.join(__dirname, '../dev-data/data/tours.json'));

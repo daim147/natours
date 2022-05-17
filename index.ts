@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import path from 'path';
 import dotenv from 'dotenv';
-//Handling synchronously error
+dotenv.config({ path: path.join(__dirname, '../config.env') });
 process.on('uncaughtException', (err: Error) => {
 	console.log(err.name + ' | ' + err.message);
 	console.log('Unhandled Exception! 💥 Shutting down');
@@ -13,12 +13,11 @@ import './src/controller/AuthController';
 import './src/controller/UserController';
 import './src/controller/TourController';
 import './src/controller/ErrorController'; //make sure import it at the end
-// initialize env
-dotenv.config({ path: path.join(__dirname, '../config.env') });
+
 // DB Connection
 App.connectDB();
 const port = Number(process.env.PORT) || 3000;
-// starting server
+// // starting server
 App.start(port, () => {
 	console.log('Server listening on port 3000');
 });

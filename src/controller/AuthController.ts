@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import { signToken } from '../../utils';
 
 import { API } from '../enums';
+import { CustomError } from '../interfaces';
 import { User, userRequired } from '../model/userModel';
 import { controller, error, post, use } from './decorators';
 import { bodyValidator, catchAsync } from './middlewares';
@@ -13,11 +14,8 @@ class AuthController {
 	@error(catchAsync)
 	async signup(req: Request, res: Response) {
 		const newUser = await User.create(req.body);
-		const secret = process.env.JWT_SECRET || 'there_is_no_secret';
 		//generating token
-		const token = jwt.sign({ id: newUser._id }, secret, {
-			expiresIn: process.env.JWT_EXPIRATION,
-		});
+		const token = signToken(newUser._id);
 		res.status(201).jsend.success({ token, result: newUser });
 	}
 
@@ -25,6 +23,13 @@ class AuthController {
 	@error(catchAsync)
 	@use(bodyValidator(true, ['email', 'password']))
 	async login(req: Request, res: Response, next: NextFunction) {
-		res.status(200).jsend.success('');
+		const { email, password } = req.body;
+		const user = await User.findOne({ email }).select('+password');
+		//check if user exists and also given password match the hashPassword store in db
+		if (!user || !(await user?.correctPassword(password, user.password))) {
+			return next(new CustomError('Invalid email or password', 401));
+		}
+		const token = signToken(user._id);
+		res.status(200).jsend.success({ token });
 	}
 }
