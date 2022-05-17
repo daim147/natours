@@ -1,16 +1,16 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { handleNonFilterProperty } from '../../../utils';
+import { nonFilter, nonFilterPropertiesArray } from '../../interfaces';
+//type setting for nonFilter object and making it readonly
+
 export const urlSearchParamsValidator =
-	(
-		filterProperties: string[] = [],
-		nonFilterProperties: string[] = ['sort', 'limit', 'select', 'page']
-	): RequestHandler =>
+	(filterProperties: string[] = [], nonFilterProperties: nonFilterPropertiesArray = nonFilter): RequestHandler =>
 	(req: Request, res: Response, next: NextFunction) => {
 		//here I separated nonFilterQueries based on  properties provided from req.query and delete it from req.query
 		if (nonFilterProperties.length) {
 			req.nonFilterQuery = {};
 			Object.keys(req.query).forEach((property) => {
-				if (nonFilterProperties.includes(property)) {
+				if (nonFilterProperties.find((prop) => prop === property)) {
 					req.query[property] = handleNonFilterProperty(req.query[property]);
 					req.nonFilterQuery[property] = req.query[property];
 					delete req.query[property];

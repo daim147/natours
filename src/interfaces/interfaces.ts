@@ -11,3 +11,5 @@ export interface paramsMiddleware {
 export interface RouteHandlerDescriptor extends PropertyDescriptor {
 	value?: RequestHandler;
 }
+export const nonFilter = ['sort', 'limit', 'select', 'page'] as const;
+export type nonFilterPropertiesArray = Readonly<typeof nonFilter[number][]>;
