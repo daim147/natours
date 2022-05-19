@@ -9,6 +9,7 @@ export interface UserInterface {
 	passwordChangeAt?: Date;
 	passwordResetToken?: string;
 	passwordResetTokenExpire?: Date;
+	active: boolean;
 }
 
 export interface UserInstanceMethods {

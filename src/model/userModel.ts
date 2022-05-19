@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema<UserInterface, Model<UserInterface, {}, U
 		},
 		default: 'user',
 	},
+	active: {
+		type: Boolean,
+		select: false,
+	},
 });
 //it will run when ever the document is save or updated and we check if password is modified
 userSchema.pre('save', async function (next) {
@@ -63,8 +67,13 @@ userSchema.pre('save', async function (next) {
 	this.passwordConfirmation = undefined; //ether it is required in schema but just for input data no to persist it in the database by setting undefined it will be removed
 	if (!this.isNew) {
 		//it check if the document is not new
-		this.passwordChangeAt = new Date(Date.now() - 30000); //sub 30000 milliseconds because some time jwt issue before the passwordChange has Set
+		this.passwordChangeAt = new Date(Date.now() - 10000); //sub 10000 milliseconds because some time jwt issue before the passwordChange has Set
 	}
+});
+
+userSchema.pre(/^find/, function (this: mongoose.Query<any, any, {}, any>, next) {
+	this.find({ active: { $ne: false } });
+	next();
 });
 
 userSchema.methods.correctPassword = async (password: string, hashPassword: string) => {

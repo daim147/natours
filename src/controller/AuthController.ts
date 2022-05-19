@@ -10,7 +10,7 @@ import { bodyValidator, catchAsync, jwtVerification, paramsValidator } from './m
 @controller(`${API.start}auth`)
 class AuthController {
 	@post('/signup')
-	@use(bodyValidator(true, userRequired, []))
+	@use(bodyValidator({ required: true, values: userRequired }, { required: false, values: [] }))
 	@error(catchAsync)
 	async signup(req: Request, res: Response) {
 		const newUser = await User.create(req.body);
@@ -20,7 +20,7 @@ class AuthController {
 
 	@post('/login')
 	@error(catchAsync)
-	@use(bodyValidator(true, ['email', 'password']))
+	@use(bodyValidator({ required: true, values: ['email', 'password'] }))
 	async login(req: Request, res: Response, next: NextFunction) {
 		const { email, password } = req.body;
 		const user = await User.findOne({ email }).select('+password');
@@ -34,7 +34,7 @@ class AuthController {
 
 	@post('/forgotPassword')
 	@error(catchAsync)
-	@use(bodyValidator(true, ['email']))
+	@use(bodyValidator({ required: true, values: ['email'] }))
 	async forgetPassword(req: Request, res: Response, next: NextFunction) {
 		const { email } = req.body;
 		//1) get user based on email
@@ -68,7 +68,7 @@ class AuthController {
 	}
 
 	@patch('/resetPassword/:token')
-	@use(paramsValidator('token'), bodyValidator(true, ['password', 'passwordConfirmation']))
+	@use(paramsValidator('token'), bodyValidator({ required: true, values: ['password', 'passwordConfirmation'] }))
 	@error(catchAsync)
 	async resetPassword(req: Request, res: Response, next: NextFunction) {
 		//1) Get user based on the resetToken
@@ -92,7 +92,10 @@ class AuthController {
 
 	@patch('/updatePassword')
 	@error(catchAsync)
-	@use(jwtVerification, bodyValidator(true, ['currentPassword', 'password', 'passwordConfirmation']))
+	@use(
+		jwtVerification,
+		bodyValidator({ required: true, values: ['currentPassword', 'password', 'passwordConfirmation'] })
+	)
 	async updatePassWord(req: Request, res: Response, next: NextFunction) {
 		//1) Get user from collection
 		const user = await User.findById(req.user._id).select('+password');

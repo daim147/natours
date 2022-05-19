@@ -31,14 +31,14 @@ class TourController {
 	}
 	@error(catchAsync)
 	@post('/')
-	@use(bodyValidator(true, tourRequired)) //when pass true and value all the value should present in the body
+	@use(bodyValidator({ required: true, values: tourRequired })) //when pass true and value all the value should present in the body
 	async postTours(req: Request, res: Response): Promise<void> {
 		const newTour = await Tour.create(req.body);
 		res.status(201).jsend.success({ result: newTour });
 	}
 	@error(catchAsync)
 	@patch('/:id')
-	@use(bodyValidator(false, tourFields)) //when pass false and value every body properties should be in values
+	@use(bodyValidator({ required: false, values: tourFields })) //when pass false and value every body properties should be in values
 	async updateTour(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
 			new: true,
