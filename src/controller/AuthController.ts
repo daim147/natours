@@ -1,12 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
-import crypto from 'crypto';
 
-import { sendEmail, signToken } from '../../utils';
+import { createHash, generateTokenAndSend, sendEmail } from '../../utils';
 import { API } from '../enums';
 import { CustomError } from '../interfaces';
 import { User, userRequired } from '../model/userModel';
 import { controller, error, patch, post, use } from './decorators';
-import { bodyValidator, catchAsync, paramsValidator } from './middlewares';
+import { bodyValidator, catchAsync, jwtVerification, paramsValidator } from './middlewares';
 
 @controller(`${API.start}auth`)
 class AuthController {
@@ -16,8 +15,7 @@ class AuthController {
 	async signup(req: Request, res: Response) {
 		const newUser = await User.create(req.body);
 		//generating token
-		const token = signToken(newUser._id);
-		res.status(201).jsend.success({ token, result: newUser });
+		generateTokenAndSend(newUser, 201, res);
 	}
 
 	@post('/login')
@@ -31,8 +29,7 @@ class AuthController {
 			return next(new CustomError('Invalid email or password', 401));
 		}
 		//generate new jwt token and send back to the user
-		const token = signToken(user._id);
-		res.status(200).jsend.success({ token });
+		generateTokenAndSend(user, 200, res);
 	}
 
 	@post('/forgotPassword')
@@ -75,7 +72,7 @@ class AuthController {
 	@error(catchAsync)
 	async resetPassword(req: Request, res: Response, next: NextFunction) {
 		//1) Get user based on the resetToken
-		const hashToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+		const hashToken = createHash(req.params.token);
 		const user = await User.findOne({ passwordResetToken: hashToken, passwordResetTokenExpire: { $gt: Date.now() } });
 		//2) if token has not expired and there is user, set new Password
 		const { password, passwordConfirmation } = req.body;
@@ -90,7 +87,25 @@ class AuthController {
 		//3) update changePasswordAt fields for the user
 
 		//4) Log the user in and send JWT
-		const token = signToken(user._id);
-		res.status(201).jsend.success({ token });
+		generateTokenAndSend(user, 201, res);
+	}
+
+	@patch('/updatePassword')
+	@error(catchAsync)
+	@use(jwtVerification, bodyValidator(true, ['currentPassword', 'password', 'passwordConfirmation']))
+	async updatePassWord(req: Request, res: Response, next: NextFunction) {
+		//1) Get user from collection
+		const user = await User.findById(req.user._id).select('+password');
+		//2) Check posted password is correct
+		const { currentPassword, password, passwordConfirmation } = req.body;
+		if (!user || !(await user?.correctPassword(currentPassword, user.password))) {
+			return next(new CustomError('Wrong Current Password or something went wrong', 401));
+		}
+		//3) if so update	password
+		user.password = password;
+		user.passwordConfirmation = passwordConfirmation;
+		await user.save();
+		//4) Log user in and send JWT
+		generateTokenAndSend(user, 200, res);
 	}
 }

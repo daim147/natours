@@ -26,7 +26,6 @@ class TourController {
 	//check that query object property should be in schema
 	@use(urlSearchParamsValidator(tourFields))
 	async getTours(req: Request, res: Response): Promise<void> {
-		console.log(req);
 		const tours = await queryWithNonFilter(Tour.find(req.filterQuery), req.nonFilterQuery);
 		res.status(200).jsend.success({ count: tours.length, result: tours });
 	}

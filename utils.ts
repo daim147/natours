@@ -2,6 +2,10 @@ import { SchemaType, Query as MongooseQuery } from 'mongoose';
 import { Query } from 'express-serve-static-core';
 import jwt, { Secret } from 'jsonwebtoken';
 import nodemailer, { SendMailOptions } from 'nodemailer';
+import { Response } from 'express';
+import crypto from 'crypto';
+
+import { UserInterface } from './src/interfaces';
 
 export const getRequiredFromSchemas = <T extends { paths: { [key: string]: SchemaType<any> } }>(
 	schema: T
@@ -109,3 +113,10 @@ export const sendEmail = async (options: SendMailOptions) => {
 	//3) Send email
 	await transporter.sendMail(mailOptions);
 };
+
+export const generateTokenAndSend = (user: UserInterface, statusCode: number, res: Response) => {
+	const token = signToken(user._id);
+	res.status(statusCode).jsend.success({ token, result: user });
+};
+
+export const createHash = (payload: string) => crypto.createHash('sha256').update(payload).digest('hex');

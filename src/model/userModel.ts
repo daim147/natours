@@ -2,7 +2,7 @@ import mongoose, { Model } from 'mongoose';
 import crypto from 'crypto';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
-import { getFieldsFromSchemas, getRequiredFromSchemas } from '../../utils';
+import { createHash, getFieldsFromSchemas, getRequiredFromSchemas } from '../../utils';
 import { UserInstanceMethods, UserInterface, userRole } from '../interfaces';
 //schema validation is just for inputting data
 const userSchema = new mongoose.Schema<UserInterface, Model<UserInterface, {}, UserInstanceMethods>>({
@@ -63,7 +63,7 @@ userSchema.pre('save', async function (next) {
 	this.passwordConfirmation = undefined; //ether it is required in schema but just for input data no to persist it in the database by setting undefined it will be removed
 	if (!this.isNew) {
 		//it check if the document is not new
-		this.passwordChangeAt = new Date(Date.now() - 1000); //sub 1000 milliseconds because some time jwt issue before the passwordChange has Set
+		this.passwordChangeAt = new Date(Date.now() - 30000); //sub 30000 milliseconds because some time jwt issue before the passwordChange has Set
 	}
 });
 
@@ -72,6 +72,7 @@ userSchema.methods.correctPassword = async (password: string, hashPassword: stri
 };
 userSchema.methods.changePasswordAfter = function (this: UserInterface, JWTTimestamp: number) {
 	if (this.passwordChangeAt) {
+		console.log(this.passwordChangeAt, new Date(JWTTimestamp * 1000));
 		const changeTimeStamp = this.passwordChangeAt.getTime() / 1000;
 		return JWTTimestamp < changeTimeStamp;
 	}
@@ -79,7 +80,7 @@ userSchema.methods.changePasswordAfter = function (this: UserInterface, JWTTimes
 };
 userSchema.methods.createPasswordResetToken = function (this: UserInterface) {
 	const token = crypto.randomBytes(32).toString('hex');
-	this.passwordResetToken = crypto.createHash('sha256').update(token).digest('hex');
+	this.passwordResetToken = createHash(token);
 	this.passwordResetTokenExpire = new Date(Date.now() + 10 * 60 * 1000);
 	return token;
 };
