@@ -1,18 +1,10 @@
-import express, {
-	Express,
-	RequestHandler,
-	Router,
-	Request,
-	Response,
-	NextFunction,
-	ErrorRequestHandler,
-} from 'express';
+import express, { Express, RequestHandler, Router, ErrorRequestHandler } from 'express';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import path from 'path';
 import jsend from 'jsend';
-import { CustomError } from './interfaces';
 import { Server } from 'http';
+
 export class App {
 	private static inst: Express;
 	private constructor() {}

@@ -1,12 +1,14 @@
 import 'reflect-metadata';
 import path from 'path';
 import dotenv from 'dotenv';
+
 dotenv.config({ path: path.join(__dirname, '../config.env') });
 process.on('uncaughtException', (err: Error) => {
 	console.log(err.name + ' | ' + err.message);
 	console.log('Unhandled Exception! 💥 Shutting down');
 	process.exit(1);
 });
+
 import { App } from './src/App';
 import './src/controller/RootController';
 import './src/controller/AuthController';

@@ -1,4 +1,5 @@
 import { RequestParamHandler } from 'express';
+
 import { MetaDataKeys } from '../../enums';
 
 export function params(param: string, middleware: RequestParamHandler) {

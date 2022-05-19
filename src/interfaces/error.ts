@@ -1,11 +1,10 @@
-export class CustomError extends Error {
+export class CustomError {
 	name: string = '';
-	private _statusCode: number = 500;
+	_statusCode: number = 500;
 	status: 'error' | 'fail' = 'error';
-	stack: string = 'HEllo';
+	stack: string = '';
 	isOperational: boolean = true;
-	constructor(message: string, code: number) {
-		super(message);
+	constructor(public message: string, code: number) {
 		this.statusCode = code;
 		Error.captureStackTrace(this, this.constructor);
 	}

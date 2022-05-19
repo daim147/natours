@@ -1,5 +1,5 @@
-import 'reflect-metadata';
 import { RequestHandler } from 'express';
+
 import { MetaDataKeys } from '../../enums';
 
 export function createRouterMiddleware(middleware: RequestHandler) {

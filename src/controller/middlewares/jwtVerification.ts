@@ -1,10 +1,11 @@
 import { JwtPayload } from 'jsonwebtoken';
+
 import { CustomError } from '../../interfaces';
 import { catchAsync } from './errorMiddlewares';
 import { secret, verifyToken } from '../../../utils';
 import { User } from '../../model/userModel';
 
-export const protectedRoute = catchAsync(async (req, res, next) => {
+export const jwtVerification = catchAsync(async (req, res, next) => {
 	//1)Getting Token and check if it is there
 	let token: string | undefined;
 	if (req.headers['authorization'] && req.headers['authorization'].startsWith('Bearer')) {

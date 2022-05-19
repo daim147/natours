@@ -1,23 +1,32 @@
 import { NextFunction, Request, Response } from 'express';
 import url from 'url';
-import { controller, del, get, patch, post, use, error } from './decorators';
+
+import { controller, del, get, patch, post, use, error, createRouterMiddleware } from './decorators';
 import { API } from '../enums';
-import { bodyValidator, paramsValidator, urlSearchParamsValidator, catchAsync, protectedRoute } from './middlewares';
+import {
+	bodyValidator,
+	paramsValidator,
+	urlSearchParamsValidator,
+	catchAsync,
+	jwtVerification,
+	restrictTo,
+} from './middlewares';
 import { Tour, tourRequired, tourFields } from '../model/tourModel';
 import { objectToUrlParamString, queryWithNonFilter } from '../../utils';
 import { CustomError } from '../interfaces';
 
 const rootRoute = `${API.start}tours`;
 //for defining middleware order matter here the execution order is from bottom to top
-// @createRouterMiddleware(sampleMiddleware)
 // @params('id', sampleParamsMiddleware)
 @controller(rootRoute)
+@createRouterMiddleware(jwtVerification) //controller should be at the top bcz execution order is bottom to top
 class TourController {
 	@error(catchAsync)
 	@get('/')
 	//check that query object property should be in schema
-	@use(protectedRoute, urlSearchParamsValidator(tourFields))
+	@use(urlSearchParamsValidator(tourFields))
 	async getTours(req: Request, res: Response): Promise<void> {
+		console.log(req);
 		const tours = await queryWithNonFilter(Tour.find(req.filterQuery), req.nonFilterQuery);
 		res.status(200).jsend.success({ count: tours.length, result: tours });
 	}
@@ -42,6 +51,7 @@ class TourController {
 		res.status(200).jsend.success({ result: tour });
 	}
 	@error(catchAsync)
+	@use(restrictTo('admin'))
 	@del('/:id')
 	async deleteTour(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const tour = await Tour.findByIdAndDelete(req.params.id);

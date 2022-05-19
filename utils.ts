@@ -1,6 +1,7 @@
 import { SchemaType, Query as MongooseQuery } from 'mongoose';
 import { Query } from 'express-serve-static-core';
 import jwt, { Secret } from 'jsonwebtoken';
+import nodemailer, { SendMailOptions } from 'nodemailer';
 
 export const getRequiredFromSchemas = <T extends { paths: { [key: string]: SchemaType<any> } }>(
 	schema: T
@@ -88,4 +89,23 @@ export const verifyToken = <T>(token: string, secret: Secret): Promise<T> => {
 			}
 		});
 	});
+};
+
+export const sendEmail = async (options: SendMailOptions) => {
+	//1) Create Transporter
+	const transporter = nodemailer.createTransport({
+		host: process.env.EMAIL_HOST,
+		port: Number(process.env.EMAIL_port),
+		auth: {
+			user: process.env.EMAIL_USERNAME,
+			pass: process.env.EMAIL_PASSWORD,
+		},
+	});
+	//2) Define Email Options
+	const mailOptions = {
+		...options,
+		from: 'Husnain Syed <daimshah784@gmail.com>',
+	};
+	//3) Send email
+	await transporter.sendMail(mailOptions);
 };

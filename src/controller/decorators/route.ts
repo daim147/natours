@@ -1,4 +1,3 @@
-import { RequestHandler } from 'express';
 import { MetaDataKeys, Methods } from '../../enums';
 import { RouteHandlerDescriptor } from '../../interfaces';
 

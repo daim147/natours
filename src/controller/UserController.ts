@@ -1,12 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { queryWithNonFilter } from '../../utils';
 import { API } from '../enums';
 import { CustomError } from '../interfaces';
 import { User, userFields } from '../model/userModel';
-import { controller, del, error, get, patch, use } from './decorators';
-import { bodyValidator, catchAsync, urlSearchParamsValidator } from './middlewares';
+import { controller, createRouterMiddleware, del, error, get, patch, use } from './decorators';
+import { bodyValidator, catchAsync, jwtVerification, urlSearchParamsValidator } from './middlewares';
+import { restrictTo } from './middlewares';
 
 @controller(`${API.start}user`)
+@createRouterMiddleware(jwtVerification)
 class UserController {
 	@get('/')
 	@use(urlSearchParamsValidator(userFields))
@@ -32,6 +35,7 @@ class UserController {
 
 	@del('/:id')
 	@error(catchAsync)
+	@use(restrictTo('admin'))
 	async deleteUser(req: Request, res: Response, next: NextFunction) {
 		const user = await User.findByIdAndDelete(req.params.id);
 		if (!user) {
@@ -44,6 +48,7 @@ class UserController {
 	@use(urlSearchParamsValidator(userFields, ['select']))
 	@error(catchAsync)
 	async getUser(req: Request, res: Response, next: NextFunction) {
+		//queryWithNonFilter will create query with nonFilter object like (select,limit,page,sort)
 		const user = await queryWithNonFilter(User.findById(req.params.id), req.nonFilterQuery);
 		if (!user) return next(new CustomError('No Record Found', 404));
 		res.status(200).jsend.success({ result: user });

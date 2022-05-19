@@ -8,7 +8,6 @@ export function controller(pathPrefix: string) {
 		const router = App.createRouter();
 		//Then get the middlewares register for controller
 		const controllerMiddlewares = Reflect.getMetadata(MetaDataKeys.middleware, target.prototype) || [];
-
 		//Then check for the params middleware
 		const params: paramsMiddleware[] = Reflect.getMetadata(MetaDataKeys.params, target.prototype) || [];
 		params.length &&

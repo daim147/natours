@@ -1,4 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
+
 import { CustomError } from '../../interfaces';
 export const bodyValidator =
 	(required: boolean, validators: string[], removeProperty: string[] = ['admin']): RequestHandler =>
