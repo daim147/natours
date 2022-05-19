@@ -8,7 +8,7 @@
 .DS_Store
 .AppleDouble
 .LSOverride
-
+config.env
 # Icon must end with two \r
 Icon
 
