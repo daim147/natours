@@ -116,7 +116,16 @@ export const sendEmail = async (options: SendMailOptions) => {
 
 export const generateTokenAndSend = (user: UserInterface, statusCode: number, res: Response) => {
 	const token = signToken(user._id);
+	const expirationDay = Number(process.env.JWT_COOKIES_EXPIRATION) || 90;
+	res.cookie('jwt', token, {
+		expires: new Date(Date.now() + expirationDay * 24 * 60 * 60 * 1000),
+		...(process.env.NODE_ENV === 'production' && { secure: true }), //only for HTTPS connections and in production
+		httpOnly: true, // cookie can not be access and change by browser
+	});
+	user.password = undefined!; //remove password from user object when creating it schema Select false does not work on creating new document and also we are explicitly selecting password in login and updatePassword
 	res.status(statusCode).jsend.success({ token, result: user });
 };
 
+//grepper create hash typescript
 export const createHash = (payload: string) => crypto.createHash('sha256').update(payload).digest('hex');
+//end grepper
