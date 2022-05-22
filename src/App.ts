@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 import expressMongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
+// import hpp from 'hpp';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
@@ -34,6 +35,8 @@ export class App {
 			App.inst.use(expressMongoSanitize());
 			//Data Sanitization against XSS
 			App.inst.use(xss());
+			//Prevent HTTP Parameters Pollution
+			//App.inst.use(hpp()); //can be use but I have already implemented some kind of functionality in handleNonFilterProperty function
 			//Serving Static Files
 			App.inst.use(express.static(path.join(__dirname, '../public')));
 			//JSEND for sending meaningful Response
