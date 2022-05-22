@@ -1,4 +1,11 @@
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
+export interface Location {
+	type: 'Point';
+	coordinates: [number, number];
+	address: string;
+	description: string;
+	day?: number;
+}
 export interface TourInterface {
 	name: string;
 	ratingsAverage: number;
@@ -17,4 +24,8 @@ export interface TourInterface {
 	_id: Types.ObjectId;
 	slug: string;
 	secretTour: boolean;
+	startLocation: Location;
+	locations: Types.DocumentArray<Location>;
+	guides: Types.Array<Types.ObjectId>;
 }
+export type TourModel = Model<TourInterface, {}, {}>;

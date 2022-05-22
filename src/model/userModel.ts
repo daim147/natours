@@ -60,7 +60,7 @@ const userSchema = new mongoose.Schema<UserInterface, Model<UserInterface, {}, U
 		select: false,
 	},
 });
-//it will run when ever the document is save or updated and we check if password is modified
+//it will run when ever the document is save or updated by save and we check if password is modified
 userSchema.pre('save', async function (next) {
 	if (!this.isModified('password')) return next();
 	this.password = await bcrypt.hash(this.password, 12);

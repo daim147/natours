@@ -1,9 +1,9 @@
-import mongoose, { Aggregate } from 'mongoose';
+import mongoose, { Aggregate, Schema } from 'mongoose';
 import slugify from 'slugify';
-import { TourInterface } from '../interfaces';
+import { Location, TourInterface, TourModel } from '../interfaces';
 import { getFieldsFromSchemas, getRequiredFromSchemas } from '../../utils';
 
-const tourSchema = new mongoose.Schema<TourInterface>(
+const tourSchema = new mongoose.Schema<TourInterface, TourModel>(
 	{
 		name: {
 			type: String,
@@ -82,6 +82,30 @@ const tourSchema = new mongoose.Schema<TourInterface>(
 			type: Boolean,
 			default: false,
 		},
+		startLocation: new Schema<Location>({
+			type: {
+				type: String,
+				enum: ['Point'],
+				default: 'Point',
+			},
+			coordinates: [Number],
+			address: String,
+			description: String,
+		}),
+		locations: [
+			new Schema<Location>({
+				type: {
+					type: String,
+					enum: ['Point'],
+					default: 'Point',
+				},
+				coordinates: [Number],
+				address: Number,
+				description: String,
+				day: Number,
+			}),
+		],
+		guides: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 	},
 	{
 		toJSON: { virtuals: true },
@@ -106,7 +130,7 @@ tourSchema.pre('save', function (next) {
 
 //? Query Middleware
 tourSchema.pre(/^find/, function (this: mongoose.Query<any, any, {}, any>, next) {
-	this.find({ secretTour: { $ne: true } });
+	this.find({ secretTour: { $ne: true } }).populate({ path: 'guides', select: '-__v -passwordChangeAt' });
 	next();
 });
 // tourSchema.post(/^find/, function (this: mongoose.Query<any, any, {}, any>, docs, next) {

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 import expressMongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
+import fs from 'fs';
 // import hpp from 'hpp';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -11,6 +12,7 @@ import jsend from 'jsend';
 import { Server } from 'http';
 
 import { API } from './enums';
+import { Tour } from './model/tourModel';
 export class App {
 	private static inst: Express;
 	private constructor() {}
@@ -52,11 +54,17 @@ export class App {
 	static start(port: number, callBack: () => void) {
 		App.server = App.Instance.listen(port, callBack);
 	}
-	static connectDB() {
+	static async connectDB(reloadDatabase: boolean = false) {
 		const DB = process.env.DATABASE!.replace('<PASSWORD>', process.env.DATABASE_PASSWORD!)!;
-		mongoose.connect(DB).then(() => {
-			console.log('Database connection established successfully');
+		await mongoose.connect(DB).then(() => {
+			console.log('Database connection established successfully ');
 		});
+		if (reloadDatabase) {
+			await Tour.deleteMany({});
+			await Tour.create(
+				JSON.parse(fs.readFileSync(path.join(__dirname, '../../dev-data/data/tours-simple.json'), 'utf8'))
+			);
+		}
 	}
 	static registerMiddleware(
 		middleWareMethod: keyof Express,

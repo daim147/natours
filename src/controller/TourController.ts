@@ -159,7 +159,8 @@ class TourController {
 	@use(urlSearchParamsValidator(tourFields, ['select']))
 	@use(paramsValidator('id')) //check if there is specified params here we don't need it but just for example'
 	async getTour(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const data = await queryWithNonFilter(Tour.findById(req.params.id), req.nonFilterQuery);
+		const query = Tour.findById(req.params.id);
+		const data = await queryWithNonFilter(query, req.nonFilterQuery);
 		if (!data) return next(new CustomError('No Record Found', 404));
 		res.status(200).jsend.success({ result: data });
 	}
