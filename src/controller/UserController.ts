@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { queryWithNonFilter } from '../../utils';
-import { App } from '../App';
 import { API } from '../enums';
 import { CustomError } from '../interfaces';
 import { User, userFields, userRequired } from '../model/userModel';

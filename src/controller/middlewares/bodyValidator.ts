@@ -1,17 +1,19 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 
 import { CustomError } from '../../interfaces';
+type required = boolean | ((req: Request) => boolean);
 export const bodyValidator =
 	(
-		validators: { required: boolean; values: string[] },
-		removeProperty: { required: boolean; values: string[] } = { required: true, values: ['role'] }
+		validators: { required: required; values: string[] },
+		removeProperty: { required: required; values: string[] } = { required: true, values: ['role'] }
 	): RequestHandler =>
 	(req: Request, res: Response, next: NextFunction) => {
 		if (!req.body) {
 			res.status(422).send('Invalid request');
 			return;
 		}
-		if (validators.required) {
+		const { required: validatorsRequired } = validators;
+		if (typeof validatorsRequired === 'boolean' ? validatorsRequired : validatorsRequired(req)) {
 			for (let key of validators.values) {
 				if (!req.body[key]) {
 					next(new CustomError('Invalid request ' + key + ' should be present', 400));
@@ -27,7 +29,8 @@ export const bodyValidator =
 			});
 		}
 		removeProperty.values.forEach((key) => {
-			if (removeProperty.required) {
+			const { required: removeRequired } = removeProperty;
+			if (typeof removeRequired === 'boolean' ? removeRequired : removeRequired(req)) {
 				if (key in req.body) {
 					return next(new CustomError('Invalid request ' + key + ' should not be present', 401));
 				}

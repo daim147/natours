@@ -24,7 +24,6 @@ import {
 import { Tour, tourRequired, tourFields } from '../model/tourModel';
 import { objectToUrlParamString, queryWithNonFilter } from '../../utils';
 import { CustomError } from '../interfaces';
-import { App } from '../App';
 import reviewRouter from './ReviewController';
 const rootRoute = `${API.start}tours`;
 

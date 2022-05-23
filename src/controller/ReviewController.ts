@@ -15,19 +15,21 @@ class ReviewsController {
 	@use(urlSearchParamsValidator(reviewFields))
 	@error(catchAsync)
 	async getAllReviews(req: Request, res: Response, next: NextFunction) {
-		const query = queryWithNonFilter(Review.find(req.filterQuery), req.nonFilterQuery);
+		let filter = {};
+		if (req.params.tourId) filter = { tour: req.params.tourId };
+		const query = queryWithNonFilter(Review.find({ ...req.filterQuery, ...filter }), req.nonFilterQuery);
 		const review = await query; //query.getFilter() to get Filters
 		res.status(200).jsend.success({ count: review.length, result: review });
 	}
 
 	@post('/')
 	@error(catchAsync)
-	@use(bodyValidator({ required: false, values: reviewRequired }))
+	@use(bodyValidator({ required: (req) => (req.params.tourId && req.user ? false : true), values: reviewRequired }))
 	async postReview(req: Request, res: Response, next: NextFunction) {
 		req.body.tour ||= req.params.tourId;
 		req.body.user ||= req.user._id;
-		const review = await Review.create(req.body);
-		res.status(201).jsend.success({ result: review });
+		// const review = await Review.create(req.body);
+		res.status(201).jsend.success({ result: 'working' });
 	}
 }
 
