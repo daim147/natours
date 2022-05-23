@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { queryWithNonFilter } from '../../utils';
+import { App } from '../App';
 import { API } from '../enums';
 import { CustomError } from '../interfaces';
 import { User, userFields, userRequired } from '../model/userModel';
-import { controller, createRouterMiddleware, del, error, get, patch, use } from './decorators';
+import { controller, createRouterMiddlewareBefore, del, error, get, patch, use } from './decorators';
 import { bodyValidator, catchAsync, jwtVerification, urlSearchParamsValidator } from './middlewares';
 import { restrictTo } from './middlewares';
 
 @controller(`${API.start}user`)
-@createRouterMiddleware(jwtVerification)
+@createRouterMiddlewareBefore(jwtVerification)
 class UserController {
 	@get('/')
 	@use(urlSearchParamsValidator(userFields))

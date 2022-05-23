@@ -116,6 +116,13 @@ const tourSchema = new mongoose.Schema<TourInterface, TourModel>(
 tourSchema.virtual('durationInWeeks').get(function () {
 	return this.duration && this.duration / 7;
 });
+
+//virtual populate
+tourSchema.virtual('reviews', {
+	ref: 'Review',
+	foreignField: 'tour',
+	localField: '_id',
+});
 //?Document Middleware
 // save(), create() will run this
 //it will run before saving the document to database

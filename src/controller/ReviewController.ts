@@ -2,13 +2,14 @@ import { NextFunction, Request, Response } from 'express';
 
 import { API } from '../enums';
 import { bodyValidator, urlSearchParamsValidator, catchAsync, jwtVerification, restrictTo } from './middlewares';
-import { CustomError } from '../interfaces';
-import { controller, error, get, use, createRouterMiddleware, post } from './decorators';
+import { controller, error, get, use, createRouterMiddlewareBefore, post } from './decorators';
 import { Review, reviewFields, reviewRequired } from '../model/reviewModel';
 import { queryWithNonFilter } from '../../utils';
+import { App } from '../App';
 
-@controller(`${API.start}reviews`)
-@createRouterMiddleware(jwtVerification)
+export const router = App.createRouter({ mergeParams: true }); //mergeParams will merge the parent params with child one
+@controller(`${API.start}reviews`, router)
+@createRouterMiddlewareBefore(jwtVerification)
 class ReviewsController {
 	@get('/')
 	@use(urlSearchParamsValidator(reviewFields))
@@ -21,9 +22,13 @@ class ReviewsController {
 
 	@post('/')
 	@error(catchAsync)
-	@use(bodyValidator({ required: true, values: reviewRequired }))
+	@use(bodyValidator({ required: false, values: reviewRequired }))
 	async postReview(req: Request, res: Response, next: NextFunction) {
+		req.body.tour ||= req.params.tourId;
+		req.body.user ||= req.user._id;
 		const review = await Review.create(req.body);
 		res.status(201).jsend.success({ result: review });
 	}
 }
+
+export default router;

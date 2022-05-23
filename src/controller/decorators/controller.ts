@@ -1,13 +1,19 @@
+import { Router, RouterOptions } from 'express';
 import { App } from '../../App';
 import { MetaDataKeys, Methods } from '../../enums';
-import { paramsMiddleware } from '../../interfaces';
+import { paramsMiddleware, middlewareObj } from '../../interfaces';
 
-export function controller(pathPrefix: string) {
+export function controller(pathPrefix: string, router: Router = App.createRouter()) {
 	return function (target: Function) {
-		//First create router (express.Router for every controller)
-		const router = App.createRouter();
-		//Then get the middlewares register for controller
-		const controllerMiddlewares = Reflect.getMetadata(MetaDataKeys.middleware, target.prototype) || [];
+		//register it after the route is matched
+		const controllerMiddlewaresAfter: middlewareObj[] =
+			Reflect.getMetadata(MetaDataKeys.afterMiddleware, target.prototype) || [];
+		controllerMiddlewaresAfter.length &&
+			controllerMiddlewaresAfter.forEach(({ path, middleware }) => {
+				router.use(path || '', middleware);
+			});
+		//Then get the middlewares register for controller before the matched
+		const controllerMiddlewaresBefore = Reflect.getMetadata(MetaDataKeys.middleware, target.prototype) || [];
 		//Then check for the params middleware
 		const params: paramsMiddleware[] = Reflect.getMetadata(MetaDataKeys.params, target.prototype) || [];
 		params.length &&
@@ -35,6 +41,6 @@ export function controller(pathPrefix: string) {
 			}
 		}
 		// Then bind router with app (express.use())
-		App.registerMiddleware('use', router, pathPrefix, controllerMiddlewares);
+		App.registerMiddleware('use', router, pathPrefix, controllerMiddlewaresBefore);
 	};
 }

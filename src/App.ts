@@ -1,4 +1,4 @@
-import express, { Express, RequestHandler, Router, ErrorRequestHandler } from 'express';
+import express, { Express, RequestHandler, Router, ErrorRequestHandler, RouterOptions } from 'express';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 import expressMongoSanitize from 'express-mongo-sanitize';
@@ -74,7 +74,7 @@ export class App {
 	): void {
 		App.Instance[middleWareMethod](path || '', ...(middlewares || []), handler);
 	}
-	static createRouter(): Router {
-		return express.Router();
+	static createRouter(options: RouterOptions = {}): Router {
+		return express.Router(options);
 	}
 }

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { App } from '../App';
 
 import { controller, get } from './decorators';
 

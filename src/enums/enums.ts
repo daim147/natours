@@ -8,6 +8,7 @@ export enum MetaDataKeys {
 	middleware = 'Middleware',
 	params = 'Params',
 	errorHandler = 'ErrorHandler',
+	afterMiddleware = 'AfterMiddleware',
 }
 
 export enum Methods {

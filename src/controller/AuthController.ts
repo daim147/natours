@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { createHash, generateTokenAndSend, sendEmail } from '../../utils';
+import { App } from '../App';
 import { API } from '../enums';
 import { CustomError } from '../interfaces';
 import { User, userRequired } from '../model/userModel';

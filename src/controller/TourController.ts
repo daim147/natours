@@ -1,7 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
 import url from 'url';
 
-import { controller, del, get, patch, post, use, error, createRouterMiddleware } from './decorators';
+import {
+	controller,
+	del,
+	get,
+	patch,
+	post,
+	use,
+	error,
+	createRouterMiddlewareBefore,
+	createRouterMiddlewareAfter,
+} from './decorators';
 import { API } from '../enums';
 import {
 	bodyValidator,
@@ -14,12 +24,15 @@ import {
 import { Tour, tourRequired, tourFields } from '../model/tourModel';
 import { objectToUrlParamString, queryWithNonFilter } from '../../utils';
 import { CustomError } from '../interfaces';
-
+import { App } from '../App';
+import reviewRouter from './ReviewController';
 const rootRoute = `${API.start}tours`;
+
 //for defining middleware order matter here the execution order is from bottom to top
 // @params('id', sampleParamsMiddleware)
 @controller(rootRoute)
-@createRouterMiddleware(jwtVerification) //controller should be at the top bcz execution order is bottom to top
+@createRouterMiddlewareBefore(jwtVerification) //controller should be at the top bcz execution order is bottom to top
+@createRouterMiddlewareAfter(reviewRouter, '/:tourId/review') //it will redirect this request to the review router
 class TourController {
 	@error(catchAsync)
 	@get('/')
@@ -159,7 +172,7 @@ class TourController {
 	@use(urlSearchParamsValidator(tourFields, ['select']))
 	@use(paramsValidator('id')) //check if there is specified params here we don't need it but just for example'
 	async getTour(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const query = Tour.findById(req.params.id);
+		const query = Tour.findById(req.params.id).populate('reviews');
 		const data = await queryWithNonFilter(query, req.nonFilterQuery);
 		if (!data) return next(new CustomError('No Record Found', 404));
 		res.status(200).jsend.success({ result: data });
