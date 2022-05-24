@@ -22,9 +22,9 @@ import {
 	restrictTo,
 } from './middlewares';
 import { Tour, tourRequired, tourFields } from '../model/tourModel';
-import { objectToUrlParamString, queryWithNonFilter } from '../../utils';
-import { CustomError } from '../interfaces';
+import { objectToUrlParamString } from '../../utils';
 import reviewRouter from './ReviewController';
+import { createOne, deleteOne, getAll, getOne, updateOne } from './crudDelegators';
 const rootRoute = `${API.start}tours`;
 
 //for defining middleware order matter here the execution order is from bottom to top
@@ -37,40 +37,26 @@ class TourController {
 	@get('/')
 	//check that query object property should be in schema
 	@use(urlSearchParamsValidator(tourFields))
-	async getTours(req: Request, res: Response): Promise<void> {
-		const query = queryWithNonFilter(Tour.find(req.filterQuery), req.nonFilterQuery);
-		const tours = await query; //query.getFilter() to get Filters
-		res.status(200).jsend.success({ count: tours.length, result: tours });
+	async getTours(req: Request, res: Response, next: NextFunction): Promise<void> {
+		await getAll(Tour, req, res, next);
 	}
 	@error(catchAsync)
 	@post('/')
 	@use(bodyValidator({ required: true, values: tourRequired })) //when pass true and value all the value should present in the body
 	async postTours(req: Request, res: Response): Promise<void> {
-		const newTour = await Tour.create(req.body);
-		res.status(201).jsend.success({ result: newTour });
+		await createOne(Tour, req, res);
 	}
 	@error(catchAsync)
 	@patch('/:id')
 	@use(bodyValidator({ required: false, values: tourFields })) //when pass false and value every body properties should be in values
 	async updateTour(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-			new: true,
-			runValidators: true,
-		});
-		if (!tour) {
-			if (!tour) return next(new CustomError('Invalid Id', 404));
-		}
-		res.status(200).jsend.success({ result: tour });
+		await updateOne(Tour, req, res, next);
 	}
 	@error(catchAsync)
 	@use(restrictTo('admin'))
 	@del('/:id')
 	async deleteTour(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const tour = await Tour.findByIdAndDelete(req.params.id);
-		if (!tour) {
-			if (!tour) return next(new CustomError('No Record Found', 404));
-		}
-		res.status(204).jsend.success({ result: { _id: tour._id } });
+		await deleteOne(Tour, req, res, next);
 	}
 	@get('/top-5-cheap')
 	async getTop(req: Request, res: Response): Promise<void> {
@@ -168,12 +154,9 @@ class TourController {
 	//putting params route at the end so that if /tours/* route that can be register before it other wise every thing after /tours/* will be routed to this route
 	@get('/:id')
 	@error(catchAsync)
-	@use(urlSearchParamsValidator(tourFields, ['select']))
+	@use(urlSearchParamsValidator([], ['select']))
 	@use(paramsValidator('id')) //check if there is specified params here we don't need it but just for example'
 	async getTour(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const query = Tour.findById(req.params.id).populate('reviews');
-		const data = await queryWithNonFilter(query, req.nonFilterQuery);
-		if (!data) return next(new CustomError('No Record Found', 404));
-		res.status(200).jsend.success({ result: data });
+		await getOne(Tour, req, res, next, { path: 'reviews' });
 	}
 }

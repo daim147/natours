@@ -4,7 +4,7 @@ import { UserInterface } from './interfaces';
 declare global {
 	namespace Express {
 		interface Request {
-			filterQuery: Query;
+			filterQuery: FilterQuery<Query>;
 			nonFilterQuery: Query;
 			hiddenBody: { [key: string]: any };
 			user: UserInterface;

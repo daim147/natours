@@ -8,9 +8,9 @@ export const deleteOne = async function <T>(
 	res: Response,
 	next: NextFunction
 ): Promise<void> {
-	const tour = await Model.findByIdAndDelete(req.params.id);
-	if (!tour) {
-		if (!tour) return next(new CustomError('No Record Found', 404));
+	const doc = await Model.findByIdAndDelete(req.params.id);
+	if (!doc) {
+		if (!doc) return next(new CustomError('No Record Found', 404));
 	}
-	res.status(204).jsend.success({ result: { _id: tour._id } });
+	res.status(204).jsend.success({ result: { _id: doc._id } });
 };

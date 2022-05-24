@@ -10,12 +10,7 @@ process.on('uncaughtException', (err: Error) => {
 });
 
 import { App } from './src/App';
-import './src/controller/RootController';
-import './src/controller/AuthController';
-import './src/controller/UserController';
-import './src/controller/TourController';
-import './src/controller/ReviewController';
-import './src/controller/ErrorController'; //make sure import it at the end
+import './src/controller';
 
 // DB Connection
 App.connectDB();

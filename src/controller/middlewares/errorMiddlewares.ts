@@ -27,6 +27,7 @@ const sendDevError = (err: CustomError, res: Response) => {
 			error: err,
 		},
 	});
+	return;
 };
 const sendProdError = (err: CustomError, res: Response) => {
 	if (err.isOperational) {
@@ -38,6 +39,7 @@ const sendProdError = (err: CustomError, res: Response) => {
 		console.error('Error 💥 ', err);
 		res.status(500).jsend.error('Something went wrong');
 	}
+	return;
 };
 
 const handleCastErrorDB = (err: CastError) => {
@@ -68,9 +70,9 @@ export const errorHandler = (err: any, _: Request, res: Response, next: NextFunc
 		if (error.name === 'CastError') error = handleCastErrorDB(error);
 		if (error.code === 11000) error = handleDuplicateFieldsDB(error);
 		if (error.name === 'ValidationError') error = handleValidationErrorDB(error);
-		sendProdError(error, res);
 		if (error.name === 'JsonWebTokenError') error = handleJWTError();
 		if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
+		sendProdError(error, res);
 	} else if (process.env.NODE_ENV === 'development') {
 		sendDevError(err, res);
 	}
