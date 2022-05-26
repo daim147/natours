@@ -24,7 +24,7 @@ export interface TourInterface {
 	_id: Types.ObjectId;
 	slug: string;
 	secretTour: boolean;
-	startLocation: Location;
+	startLocation: Types.Subdocument<Location>;
 	locations: Types.DocumentArray<Location>;
 	guides: Types.Array<Types.ObjectId>;
 }

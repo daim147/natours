@@ -2,7 +2,17 @@ import mongoose, { Aggregate, Schema } from 'mongoose';
 import slugify from 'slugify';
 import { Location, TourInterface, TourModel } from '../interfaces';
 import { getFieldsFromSchemas, getRequiredFromSchemas } from '../../utils';
-
+const locationSchema = new Schema<Location>({
+	type: {
+		type: String,
+		enum: ['Point'],
+		default: 'Point',
+	},
+	coordinates: [Number],
+	address: String,
+	description: String,
+	day: Number,
+});
 const tourSchema = new mongoose.Schema<TourInterface, TourModel>(
 	{
 		name: {
@@ -82,29 +92,8 @@ const tourSchema = new mongoose.Schema<TourInterface, TourModel>(
 			type: Boolean,
 			default: false,
 		},
-		startLocation: new Schema<Location>({
-			type: {
-				type: String,
-				enum: ['Point'],
-				default: 'Point',
-			},
-			coordinates: [Number],
-			address: String,
-			description: String,
-		}),
-		locations: [
-			new Schema<Location>({
-				type: {
-					type: String,
-					enum: ['Point'],
-					default: 'Point',
-				},
-				coordinates: [Number],
-				address: Number,
-				description: String,
-				day: Number,
-			}),
-		],
+		startLocation: locationSchema,
+		locations: [locationSchema],
 		guides: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 	},
 	{
@@ -112,6 +101,9 @@ const tourSchema = new mongoose.Schema<TourInterface, TourModel>(
 		toObject: { virtuals: true },
 	}
 );
+//? Indexes
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
 //virtuals create id fields automatically
 tourSchema.virtual('durationInWeeks').get(function () {
 	return this.duration && this.duration / 7;

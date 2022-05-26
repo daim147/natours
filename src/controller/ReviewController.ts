@@ -13,7 +13,6 @@ export const router = App.createRouter({ mergeParams: true }); //mergeParams wil
 class ReviewsController {
 	@get('/')
 	@use(urlSearchParamsValidator(reviewFields))
-	@error(catchAsync)
 	async getAllReviews(req: Request, res: Response, next: NextFunction) {
 		let filter = {};
 		if (req.params.tourId) filter = { tour: req.params.tourId };
@@ -21,20 +20,21 @@ class ReviewsController {
 	}
 
 	@del('/:id')
-	@error(catchAsync)
+	@use(restrictTo('admin', 'user'))
 	async deleteReview(req: Request, res: Response, next: NextFunction) {
 		await deleteOne(Review, req, res, next);
 	}
 
 	@patch('/:id')
-	@error(catchAsync)
-	@use(bodyValidator({ required: false, values: reviewFields }))
+	@use(restrictTo('admin', 'user'), bodyValidator({ required: false, values: reviewFields }))
 	async updateReview(req: Request, res: Response, next: NextFunction) {
 		await updateOne(Review, req, res, next);
 	}
 	@post('/')
-	@error(catchAsync)
-	@use(bodyValidator({ required: (req) => (req.params.tourId && req.user ? false : true), values: reviewRequired }))
+	@use(
+		restrictTo('admin', 'user'),
+		bodyValidator({ required: (req) => (req.params.tourId && req.user ? false : true), values: reviewFields })
+	)
 	async postReview(req: Request, res: Response) {
 		req.body.tour ||= req.params.tourId;
 		req.body.user ||= req.user._id;
@@ -43,7 +43,6 @@ class ReviewsController {
 
 	@get('/:id')
 	@use(urlSearchParamsValidator([], ['select']))
-	@error(catchAsync)
 	async getReview(req: Request, res: Response, next: NextFunction) {
 		await getOne(Review, req, res, next);
 	}

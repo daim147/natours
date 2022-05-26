@@ -33,26 +33,25 @@ const rootRoute = `${API.start}tours`;
 @createRouterMiddlewareBefore(jwtVerification) //controller should be at the top bcz execution order is bottom to top
 @createRouterMiddlewareAfter(reviewRouter, '/:tourId/review') //it will redirect this request to the review router
 class TourController {
-	@error(catchAsync)
 	@get('/')
 	//check that query object property should be in schema
 	@use(urlSearchParamsValidator(tourFields))
 	async getTours(req: Request, res: Response, next: NextFunction): Promise<void> {
 		await getAll(Tour, req, res, next);
 	}
-	@error(catchAsync)
+
 	@post('/')
 	@use(bodyValidator({ required: true, values: tourRequired })) //when pass true and value all the value should present in the body
 	async postTours(req: Request, res: Response): Promise<void> {
 		await createOne(Tour, req, res);
 	}
-	@error(catchAsync)
+
 	@patch('/:id')
 	@use(bodyValidator({ required: false, values: tourFields })) //when pass false and value every body properties should be in values
 	async updateTour(req: Request, res: Response, next: NextFunction): Promise<void> {
 		await updateOne(Tour, req, res, next);
 	}
-	@error(catchAsync)
+
 	@use(restrictTo('admin'))
 	@del('/:id')
 	async deleteTour(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -64,7 +63,7 @@ class TourController {
 		const searchQuery = { limit: 5, sort: '-ratingsAverage,price', ...query };
 		res.redirect(`${rootRoute}?${objectToUrlParamString(searchQuery)}`);
 	}
-	@error(catchAsync)
+
 	@get('/tour-stats')
 	async getTourStats(req: Request, res: Response): Promise<void> {
 		const stats = await Tour.aggregate([
@@ -90,7 +89,7 @@ class TourController {
 		]);
 		res.status(200).jsend.success({ count: stats.length, result: stats });
 	}
-	@error(catchAsync)
+
 	@get('/monthly-plan/:year')
 	async getMonthlyPlan(req: Request, res: Response): Promise<void> {
 		const year = Number(req.params.year);
@@ -153,7 +152,6 @@ class TourController {
 	// @get('/:id/:name?')
 	//putting params route at the end so that if /tours/* route that can be register before it other wise every thing after /tours/* will be routed to this route
 	@get('/:id')
-	@error(catchAsync)
 	@use(urlSearchParamsValidator([], ['select']))
 	@use(paramsValidator('id')) //check if there is specified params here we don't need it but just for example'
 	async getTour(req: Request, res: Response, next: NextFunction): Promise<void> {

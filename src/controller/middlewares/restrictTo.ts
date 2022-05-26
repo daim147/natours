@@ -7,7 +7,7 @@ export const restrictTo =
 	(req: Request, res: Response, next: NextFunction) => {
 		const role = req.user.role;
 		if (!roles.find((rl) => rl === role)) {
-			return next(new CustomError('You are not allowed to access this route', 401));
+			return next(new CustomError('You are not allowed to access this route as ' + role, 401));
 		}
 		next();
 	};

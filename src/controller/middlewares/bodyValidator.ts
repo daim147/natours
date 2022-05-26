@@ -20,6 +20,11 @@ export const bodyValidator =
 					return;
 				}
 			}
+			// const removeProperties = Object.keys(req.body).filter((key) => !validators.values.includes(key));
+			// if (removeProperties.length) {
+			// 	removeProperty.required = true;
+			// 	removeProperty.values = removeProperties;
+			// }
 		} else {
 			Object.keys(req.body).forEach((key) => {
 				if (!validators.values.includes(key)) {
@@ -29,8 +34,8 @@ export const bodyValidator =
 			});
 		}
 		removeProperty.values.forEach((key) => {
-			const { required: removeRequired } = removeProperty;
-			if (typeof removeRequired === 'boolean' ? removeRequired : removeRequired(req)) {
+			const { required } = removeProperty;
+			if (typeof required === 'boolean' ? required : required(req)) {
 				if (key in req.body) {
 					return next(new CustomError('Invalid request ' + key + ' should not be present', 401));
 				}

@@ -29,7 +29,7 @@ export const urlSearchParamsValidator =
 			}
 			//replace operators(gte, gt, lte,lt) with $operators
 			req.filterQuery = JSON.parse(
-				JSON.stringify(req.filterQuery).replace(/\b(gte|gt|lte|lt)\b/g, (match: any) => `$${match}`)
+				JSON.stringify(req.filterQuery).replace(/\b(gte|gt|lte|lt|ne)\b/g, (match: any) => `$${match}`)
 			);
 		}
 		next();

@@ -13,6 +13,8 @@ import { Server } from 'http';
 
 import { API } from './enums';
 import { Tour } from './model/tourModel';
+import { User } from './model/userModel';
+import { Review } from './model/reviewModel';
 export class App {
 	private static inst: Express;
 	private constructor() {}
@@ -61,9 +63,18 @@ export class App {
 		});
 		if (reloadDatabase) {
 			await Tour.deleteMany({});
+			await User.deleteMany({});
+			await Review.deleteMany({});
 			await Tour.create(
 				JSON.parse(fs.readFileSync(path.join(__dirname, '../../dev-data/data/tours-simple.json'), 'utf8'))
 			);
+			await User.create(JSON.parse(fs.readFileSync(path.join(__dirname, '../../dev-data/data/users.json'), 'utf8')), {
+				validateBeforeSave: false,
+			});
+			await Review.create(
+				JSON.parse(fs.readFileSync(path.join(__dirname, '../../dev-data/data/reviews.json'), 'utf8'))
+			);
+			console.log('Done');
 		}
 	}
 	static registerMiddleware(

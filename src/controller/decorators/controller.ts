@@ -2,6 +2,7 @@ import { Router, RouterOptions } from 'express';
 import { App } from '../../App';
 import { MetaDataKeys, Methods } from '../../enums';
 import { paramsMiddleware, middlewareObj } from '../../interfaces';
+import { catchAsync } from '../middlewares';
 
 export function controller(pathPrefix: string, router: Router = App.createRouter()) {
 	return function (target: Function) {
@@ -28,6 +29,8 @@ export function controller(pathPrefix: string, router: Router = App.createRouter
 			const errorHandler = Reflect.getMetadata(MetaDataKeys.errorHandler, target.prototype, key);
 			if (errorHandler) {
 				routeHandler = errorHandler(routeHandler);
+			} else {
+				routeHandler = catchAsync(routeHandler);
 			}
 			//Then get the the path of which method is bound
 			const path = Reflect.getMetadata(MetaDataKeys.path, target.prototype, key);
