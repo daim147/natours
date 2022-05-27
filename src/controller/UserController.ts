@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import { API } from '../enums';
 import { User, userFields } from '../model/userModel';

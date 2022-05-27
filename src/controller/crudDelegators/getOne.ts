@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from 'express';
-import mongoose, { PopulateOptions } from 'mongoose';
+import type { NextFunction, Request, Response } from 'express';
+import type { PopulateOptions, Model } from 'mongoose';
 import { queryWithNonFilter } from '../../../utils';
 import { CustomError } from '../../interfaces';
 export const getOne = async function <T>(
-	Model: mongoose.Model<T, {}, {}, {}>,
+	Model: Model<T, {}, {}, {}>,
 	req: Request,
 	res: Response,
 	next: NextFunction,

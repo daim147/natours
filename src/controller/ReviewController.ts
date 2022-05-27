@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import { API } from '../enums';
-import { bodyValidator, urlSearchParamsValidator, catchAsync, jwtVerification, restrictTo } from './middlewares';
-import { controller, error, get, use, createRouterMiddlewareBefore, post, del, patch } from './decorators';
+import { bodyValidator, urlSearchParamsValidator, jwtVerification, restrictTo } from './middlewares';
+import { controller, get, use, createRouterMiddlewareBefore, post, del, patch } from './decorators';
 import { Review, reviewFields, reviewRequired } from '../model/reviewModel';
 import { App } from '../App';
 import { createOne, deleteOne, getAll, getOne, updateOne } from './crudDelegators';
@@ -33,7 +33,7 @@ class ReviewsController {
 	@post('/')
 	@use(
 		restrictTo('admin', 'user'),
-		bodyValidator({ required: (req) => (req.params.tourId && req.user ? false : true), values: reviewFields })
+		bodyValidator({ required: (req) => (req.params.tourId && req.user ? false : true), values: reviewRequired })
 	)
 	async postReview(req: Request, res: Response) {
 		req.body.tour ||= req.params.tourId;

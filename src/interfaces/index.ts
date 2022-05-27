@@ -3,3 +3,4 @@ export * from './error';
 export * from './user';
 export * from './interfaces';
 export * from './review';
+export * from './typescriptTest';

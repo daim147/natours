@@ -1,6 +1,6 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { CustomError } from '../../interfaces';
-import { CastError, Error } from 'mongoose';
+import type { CastError, Error } from 'mongoose';
 export const catchAsync =
 	(fn: RequestHandler): RequestHandler =>
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -19,7 +19,7 @@ export const notFoundHandler = (req: Request, res: Response) => {
 };
 
 const sendDevError = (err: CustomError, res: Response) => {
-	res.status(err.statusCode).jsend[err.status]({
+	res.status(err.statusCode).json({
 		message: err.message,
 		code: err.statusCode,
 		data: {

@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import { createHash, generateTokenAndSend, sendEmail } from '../../utils';
 import { API } from '../enums';
 import { CustomError } from '../interfaces';
 import { User, userRequired } from '../model/userModel';
-import { controller, error, patch, post, use } from './decorators';
-import { bodyValidator, catchAsync, jwtVerification, paramsValidator } from './middlewares';
+import { controller, patch, post, use } from './decorators';
+import { bodyValidator, jwtVerification, paramsValidator } from './middlewares';
 
 @controller(`${API.start}auth`)
 class AuthController {

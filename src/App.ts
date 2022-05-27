@@ -1,4 +1,10 @@
-import express, { Express, RequestHandler, Router, ErrorRequestHandler, RouterOptions } from 'express';
+import express, {
+	type Express,
+	type RequestHandler,
+	type Router,
+	type ErrorRequestHandler,
+	type RouterOptions,
+} from 'express';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 import expressMongoSanitize from 'express-mongo-sanitize';
@@ -15,6 +21,7 @@ import { API } from './enums';
 import { Tour } from './model/tourModel';
 import { User } from './model/userModel';
 import { Review } from './model/reviewModel';
+
 export class App {
 	private static inst: Express;
 	private constructor() {}

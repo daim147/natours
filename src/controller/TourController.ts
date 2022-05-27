@@ -25,6 +25,7 @@ import { Tour, tourRequired, tourFields } from '../model/tourModel';
 import { objectToUrlParamString } from '../../utils';
 import reviewRouter from './ReviewController';
 import { createOne, deleteOne, getAll, getOne, updateOne } from './crudDelegators';
+import { CustomError } from '../interfaces';
 const rootRoute = `${API.start}tours`;
 
 //for defining middleware order matter here the execution order is from bottom to top
@@ -148,6 +149,55 @@ class TourController {
 			},
 		]);
 		res.status(200).jsend.success({ count: monthly.length, result: monthly });
+	}
+	@get('/distances/:latlng/unit/:unit')
+	async getDistancesByLatLng(req: Request, res: Response, next: NextFunction) {
+		console.log('hello work');
+		const { latlng, unit } = req.params;
+		const [lat, lng] = latlng.split(',');
+		if (!lat || !lng) {
+			return next(new CustomError('Please provide latitude and longitude in format lat,lng', 400));
+		}
+		if (!['mi', 'km'].includes(unit)) {
+			return next(new CustomError('Please provide unit (mi or km)', 400));
+		}
+		const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+		const results = await Tour.aggregate([
+			{
+				$geoNear: {
+					near: {
+						type: 'Point',
+						coordinates: [Number(lng), Number(lat)],
+					},
+					distanceField: 'distance',
+					distanceMultiplier: multiplier,
+				},
+			},
+			{
+				$project: {
+					distance: 1,
+					name: 1,
+				},
+			},
+		]);
+		res.status(200).jsend.success({ count: results.length, results });
+	}
+
+	@get('/tours-within/:distance/center/:latlng/unit/:unit?')
+	async getTourWithin(req: Request, res: Response, next: NextFunction) {
+		const { distance, latlng, unit } = req.params;
+		const [lat, lng] = latlng.split(',');
+		if (!lat || !lng) {
+			return next(new CustomError('Please provide latitude and longitude in format lat,lng', 400));
+		}
+		if (!['mi', 'km'].includes(unit)) {
+			return next(new CustomError('Please provide unit (mi or km)', 400));
+		}
+		const radius = unit === 'mi' ? Number(distance) / 3963.2 : Number(distance) / 6378.1;
+		const results = await Tour.find({
+			startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+		});
+		res.status(200).jsend.success({ count: results.length, results });
 	}
 	// @get('/:id/:name?')
 	//putting params route at the end so that if /tours/* route that can be register before it other wise every thing after /tours/* will be routed to this route

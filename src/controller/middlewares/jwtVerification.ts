@@ -1,4 +1,4 @@
-import { JwtPayload } from 'jsonwebtoken';
+import type { JwtPayload } from 'jsonwebtoken';
 
 import { CustomError } from '../../interfaces';
 import { catchAsync } from './errorMiddlewares';
@@ -14,6 +14,7 @@ export const jwtVerification = catchAsync(async (req, res, next) => {
 	if (!token) {
 		return next(new CustomError('You are not logged in to get access', 401));
 	}
+	console.log('Here I am');
 	//2) Verification of token
 	const decode = await verifyToken<JwtPayload>(token, secret);
 	//3) Check if user still exists

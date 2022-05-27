@@ -1,8 +1,8 @@
-import { SchemaType, Query as MongooseQuery } from 'mongoose';
-import { Query } from 'express-serve-static-core';
-import jwt, { Secret } from 'jsonwebtoken';
-import nodemailer, { SendMailOptions } from 'nodemailer';
-import { Response } from 'express';
+import type { SchemaType, Query as MongooseQuery } from 'mongoose';
+import type { Query } from 'express-serve-static-core';
+import jwt, { type Secret } from 'jsonwebtoken';
+import nodemailer, { type SendMailOptions } from 'nodemailer';
+import type { Response } from 'express';
 import crypto from 'crypto';
 
 import { UserInterface } from './src/interfaces';

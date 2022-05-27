@@ -1,4 +1,4 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import type { NextFunction, Request, RequestHandler, Response } from 'express';
 
 import { CustomError } from '../../interfaces';
 type required = boolean | ((req: Request) => boolean);

@@ -22,11 +22,3 @@ export type nonFilterPropertiesArray = convertEnumToTypeArray<typeof nonFilter>;
 
 export const userRole = ['user', 'guide', 'lead-guide', 'admin'] as const;
 export type UserRole = convertEnumToTypeArray<typeof userRole>;
-
-type Extract<T, U> = T extends U ? T : never;
-type Exclude<T, U> = T extends U ? never : T;
-type ReturnType<T> = T extends (...arg: any[]) => infer K ? K : never;
-type abc = ReturnType<() => ['a', 'b', 'c', 'd', 'e', 'f']>;
-type a = Exclude<'a' | 'b' | 'c', 'a'>;
-type ab = Exclude<'a' | 'b' | 'c', 'a' | 'b'>;
-type b = Extract<'a' | 'b' | 'c', 'a' | 'b'>;

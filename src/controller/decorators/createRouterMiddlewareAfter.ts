@@ -1,4 +1,4 @@
-import { RequestHandler, Router } from 'express';
+import type { RequestHandler, Router } from 'express';
 
 import { MetaDataKeys } from '../../enums';
 

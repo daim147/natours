@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from 'express';
-import mongoose, { FilterQuery } from 'mongoose';
-import { Query } from 'express-serve-static-core';
+import type { NextFunction, Request, Response } from 'express';
+import type { FilterQuery, Model } from 'mongoose';
+import type { Query } from 'express-serve-static-core';
 import { queryWithNonFilter } from '../../../utils';
 
 export const getAll = async function <T>(
-	Model: mongoose.Model<T, {}, {}, {}>,
+	Model: Model<T, {}, {}, {}>,
 	req: Request,
 	res: Response,
 	next: NextFunction,

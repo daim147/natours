@@ -1,4 +1,4 @@
-import { Model, Types } from 'mongoose';
+import type { Model, Types } from 'mongoose';
 export interface ReviewInterface {
 	review: string;
 	rating: number;

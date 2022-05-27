@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from 'express';
-import mongoose from 'mongoose';
+import type { NextFunction, Request, Response } from 'express';
+import type { Model } from 'mongoose';
+
 import { CustomError } from '../../interfaces';
 export const updateOne = async function <T>(
-	Model: mongoose.Model<T, {}, {}, {}>,
+	Model: Model<T, {}, {}, {}>,
 	req: Request,
 	res: Response,
 	next: NextFunction

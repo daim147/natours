@@ -1,4 +1,4 @@
-import { RequestParamHandler } from 'express';
+import type { RequestParamHandler } from 'express';
 
 import { MetaDataKeys } from '../../enums';
 

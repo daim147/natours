@@ -104,6 +104,7 @@ const tourSchema = new mongoose.Schema<TourInterface, TourModel>(
 //? Indexes
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 //virtuals create id fields automatically
 tourSchema.virtual('durationInWeeks').get(function () {
 	return this.duration && this.duration / 7;
@@ -139,7 +140,7 @@ tourSchema.pre(/^find/, function (this: mongoose.Query<any, any, {}, any>, next)
 
 //? Aggregation Middleware
 tourSchema.pre('aggregate', function (this: Aggregate<any>, next) {
-	this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+	this.pipeline().push({ $match: { secretTour: { $ne: true } } });
 	next();
 });
 

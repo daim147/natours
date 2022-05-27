@@ -8,7 +8,6 @@ process.on('uncaughtException', (err: Error) => {
 	console.log('Unhandled Exception! 💥 Shutting down');
 	process.exit(1);
 });
-
 import { App } from './src/App';
 import './src/controller';
 //!In Each Controller class every function is passwd to catchAsync function for error handling pass in case of your custom error handler function pass function to @error() decorators on the function

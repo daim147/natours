@@ -1,4 +1,4 @@
-import { Router, RouterOptions } from 'express';
+import type { Router } from 'express';
 import { App } from '../../App';
 import { MetaDataKeys, Methods } from '../../enums';
 import { paramsMiddleware, middlewareObj } from '../../interfaces';
