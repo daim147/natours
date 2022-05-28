@@ -1,7 +1,7 @@
 import mongoose, { Aggregate, Schema } from 'mongoose';
 import slugify from 'slugify';
 import { Location, TourInterface, TourModel } from '../interfaces';
-import { getFieldsFromSchemas, getRequiredFromSchemas } from '../../utils';
+import { getFieldsFromSchemas, getRequiredFromSchemas } from '../utils';
 const locationSchema = new Schema<Location>({
 	type: {
 		type: String,

@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { FilterQuery, Model } from 'mongoose';
 import type { Query } from 'express-serve-static-core';
-import { queryWithNonFilter } from '../../../utils';
+import { queryWithNonFilter } from '../../utils';
 
 export const getAll = async function <T>(
 	Model: Model<T, {}, {}, {}>,

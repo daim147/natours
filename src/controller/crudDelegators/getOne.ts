@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { PopulateOptions, Model } from 'mongoose';
-import { queryWithNonFilter } from '../../../utils';
+import { queryWithNonFilter } from '../../utils';
 import { CustomError } from '../../interfaces';
 export const getOne = async function <T>(
 	Model: Model<T, {}, {}, {}>,

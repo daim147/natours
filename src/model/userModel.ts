@@ -2,7 +2,7 @@ import mongoose, { Model } from 'mongoose';
 import crypto from 'crypto';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
-import { createHash, getFieldsFromSchemas, getRequiredFromSchemas } from '../../utils';
+import { createHash, getFieldsFromSchemas, getRequiredFromSchemas } from '../utils';
 import { UserInstanceMethods, UserInterface, userRole } from '../interfaces';
 //schema validation is just for inputting data
 const userSchema = new mongoose.Schema<UserInterface, Model<UserInterface, {}, UserInstanceMethods>>({

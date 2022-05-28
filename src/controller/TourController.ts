@@ -13,16 +13,9 @@ import {
 	createRouterMiddlewareAfter,
 } from './decorators';
 import { API } from '../enums';
-import {
-	bodyValidator,
-	paramsValidator,
-	urlSearchParamsValidator,
-	catchAsync,
-	jwtVerification,
-	restrictTo,
-} from './middlewares';
+import { bodyValidator, paramsValidator, urlSearchParamsValidator, jwtVerification, restrictTo } from './middlewares';
 import { Tour, tourRequired, tourFields } from '../model/tourModel';
-import { objectToUrlParamString } from '../../utils';
+import { objectToUrlParamString } from '../utils';
 import reviewRouter from './ReviewController';
 import { createOne, deleteOne, getAll, getOne, updateOne } from './crudDelegators';
 import { CustomError } from '../interfaces';

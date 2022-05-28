@@ -5,7 +5,7 @@ import nodemailer, { type SendMailOptions } from 'nodemailer';
 import type { Response } from 'express';
 import crypto from 'crypto';
 
-import { UserInterface } from './src/interfaces';
+import { UserInterface } from './interfaces';
 
 export const getRequiredFromSchemas = <T extends { paths: { [key: string]: SchemaType<any> } }>(
 	schema: T

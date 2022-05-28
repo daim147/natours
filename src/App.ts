@@ -34,6 +34,12 @@ export class App {
 				message: 'You have reached 100 requests per 15 minutes try again after 15 minutes',
 			});
 			App.inst = express();
+			//Setting Up View Engine
+			App.inst.set('view engine', 'pug');
+			//Setting Up Views Folder
+			App.inst.set('views', path.join(__dirname, 'views'));
+			//Serving Static Files
+			App.inst.use(express.static(path.join(__dirname, '../public')));
 			//Set security http headers
 			App.inst.use(helmet());
 			//Limit request from same IP address
@@ -46,10 +52,6 @@ export class App {
 			App.inst.use(expressMongoSanitize());
 			//Data Sanitization against XSS
 			App.inst.use(xss());
-			//Prevent HTTP Parameters Pollution
-			//App.inst.use(hpp()); //can be use but I have already implemented some kind of functionality in handleNonFilterProperty function
-			//Serving Static Files
-			App.inst.use(express.static(path.join(__dirname, '../public')));
 			//JSEND for sending meaningful Response
 			App.inst.use(jsend.middleware);
 			//Attaching Request Time
@@ -57,6 +59,11 @@ export class App {
 				req.requestTime = new Date().toISOString();
 				next();
 			});
+			App.inst.use('/', (req, res, next) => {
+				res.status(200).render('base');
+			});
+			//Prevent HTTP Parameters Pollution
+			//App.inst.use(hpp()); //can be use but I have already implemented some kind of functionality in handleNonFilterProperty function
 		}
 		return App.inst;
 	}

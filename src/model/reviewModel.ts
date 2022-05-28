@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { ReviewInterface, ReviewModel } from '../interfaces';
-import { getFieldsFromSchemas, getRequiredFromSchemas } from '../../utils';
+import { getFieldsFromSchemas, getRequiredFromSchemas } from '../utils';
 import { Tour } from './tourModel';
 
 const reviewSchema = new mongoose.Schema<ReviewInterface, ReviewModel>({
