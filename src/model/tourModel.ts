@@ -1,4 +1,4 @@
-import mongoose, { Aggregate, Schema } from 'mongoose';
+import { type Aggregate, Schema, type Query, model } from 'mongoose';
 import slugify from 'slugify';
 import { Location, TourInterface, TourModel } from '../interfaces';
 import { getFieldsFromSchemas, getRequiredFromSchemas } from '../utils';
@@ -13,7 +13,7 @@ const locationSchema = new Schema<Location>({
 	description: String,
 	day: Number,
 });
-const tourSchema = new mongoose.Schema<TourInterface, TourModel>(
+const tourSchema = new Schema<TourInterface, TourModel>(
 	{
 		name: {
 			type: String,
@@ -29,6 +29,7 @@ const tourSchema = new mongoose.Schema<TourInterface, TourModel>(
 			default: 5,
 			min: [1, '{VALUE} is InValid. Rating average should be above 1'],
 			max: [5, '{VALUE} is InValid. Rating average should be below 5'],
+			set: (val: number) => Math.round(val * 10) / 10,
 		},
 		ratingsQuantity: {
 			type: Number,
@@ -129,7 +130,7 @@ tourSchema.pre('save', function (next) {
 // });
 
 //? Query Middleware
-tourSchema.pre(/^find/, function (this: mongoose.Query<any, any, {}, any>, next) {
+tourSchema.pre(/^find/, function (this: Query<any, any, {}, any>, next) {
 	this.find({ secretTour: { $ne: true } }).populate({ path: 'guides', select: '-__v -passwordChangeAt' });
 	next();
 });
@@ -144,6 +145,6 @@ tourSchema.pre('aggregate', function (this: Aggregate<any>, next) {
 	next();
 });
 
-export const Tour = mongoose.model('Tour', tourSchema);
+export const Tour = model('Tour', tourSchema);
 export const tourRequired: string[] = getRequiredFromSchemas(tourSchema);
 export const tourFields: string[] = getFieldsFromSchemas(tourSchema);

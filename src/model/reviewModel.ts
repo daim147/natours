@@ -1,9 +1,9 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema, type Query, model } from 'mongoose';
 import { ReviewInterface, ReviewModel } from '../interfaces';
 import { getFieldsFromSchemas, getRequiredFromSchemas } from '../utils';
 import { Tour } from './tourModel';
 
-const reviewSchema = new mongoose.Schema<ReviewInterface, ReviewModel>({
+const reviewSchema = new Schema<ReviewInterface, ReviewModel>({
 	review: {
 		type: String,
 		required: [true, 'Review is required'],
@@ -32,7 +32,7 @@ const reviewSchema = new mongoose.Schema<ReviewInterface, ReviewModel>({
 
 reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 //? Query Middleware
-reviewSchema.pre(/^find/, function (this: mongoose.Query<any, any, {}, any>, next) {
+reviewSchema.pre(/^find/, function (this: Query<any, any, {}, any>, next) {
 	// this.populate({ path: 'tour', select: 'name -guides' }).populate({ path: 'user', select: 'name photo' });
 	this.populate({ path: 'user', select: 'name photo' });
 	next();
@@ -60,15 +60,15 @@ reviewSchema.post('save', async function () {
 	//@ts-ignore
 	this.constructor.calcRatingAvgAndReviewCount(this.tour);
 });
-reviewSchema.pre(/^findOneAnd/, async function (this: mongoose.Query<any, any, {}, any>) {
+reviewSchema.pre(/^findOneAnd/, async function (this: Query<any, any, {}, any>) {
 	//@ts-ignore
 	this.review = await this.model.findOne(this.getQuery());
 });
-reviewSchema.post(/^findOneAnd/, async function (this: mongoose.Query<any, any, {}, any>) {
+reviewSchema.post(/^findOneAnd/, async function (this: Query<any, any, {}, any>) {
 	//@ts-ignore
 	this.review.constructor.calcRatingAvgAndReviewCount(this.review.tour);
 });
-export const Review = mongoose.model<ReviewInterface, ReviewModel>('Review', reviewSchema);
+export const Review = model<ReviewInterface, ReviewModel>('Review', reviewSchema);
 Review.calcRatingAvgAndReviewCount;
 export const reviewRequired: string[] = getRequiredFromSchemas(reviewSchema);
 export const reviewFields: string[] = getFieldsFromSchemas(reviewSchema);

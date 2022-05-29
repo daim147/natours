@@ -13,7 +13,7 @@ import './controller';
 //!In Each Controller class every function is passwd to catchAsync function for error handling pass in case of your custom error handler function pass function to @error() decorators on the function
 
 // DB Connection
-App.connectDB();
+App.connectDB(false);
 const port = Number(process.env.PORT) || 3000;
 // starting server
 App.start(port, () => {

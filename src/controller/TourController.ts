@@ -145,7 +145,6 @@ class TourController {
 	}
 	@get('/distances/:latlng/unit/:unit')
 	async getDistancesByLatLng(req: Request, res: Response, next: NextFunction) {
-		console.log('hello work');
 		const { latlng, unit } = req.params;
 		const [lat, lng] = latlng.split(',');
 		if (!lat || !lng) {

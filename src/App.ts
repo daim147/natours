@@ -41,7 +41,12 @@ export class App {
 			//Serving Static Files
 			App.inst.use(express.static(path.join(__dirname, '../public')));
 			//Set security http headers
-			App.inst.use(helmet());
+			App.inst.use(
+				helmet({
+					contentSecurityPolicy: false,
+					crossOriginEmbedderPolicy: false,
+				})
+			);
 			//Limit request from same IP address
 			App.inst.use(API.start, limit);
 			//Request Logger
@@ -58,9 +63,6 @@ export class App {
 			App.inst.use((req, _, next) => {
 				req.requestTime = new Date().toISOString();
 				next();
-			});
-			App.inst.use('/', (req, res, next) => {
-				res.status(200).render('base');
 			});
 			//Prevent HTTP Parameters Pollution
 			//App.inst.use(hpp()); //can be use but I have already implemented some kind of functionality in handleNonFilterProperty function
@@ -79,15 +81,11 @@ export class App {
 			await Tour.deleteMany({});
 			await User.deleteMany({});
 			await Review.deleteMany({});
-			await Tour.create(
-				JSON.parse(fs.readFileSync(path.join(__dirname, '../../dev-data/data/tours-simple.json'), 'utf8'))
-			);
-			await User.create(JSON.parse(fs.readFileSync(path.join(__dirname, '../../dev-data/data/users.json'), 'utf8')), {
+			await Tour.create(JSON.parse(fs.readFileSync(path.join(__dirname, '../dev-data/data/tours.json'), 'utf8')));
+			await User.create(JSON.parse(fs.readFileSync(path.join(__dirname, '../dev-data/data/users.json'), 'utf8')), {
 				validateBeforeSave: false,
 			});
-			await Review.create(
-				JSON.parse(fs.readFileSync(path.join(__dirname, '../../dev-data/data/reviews.json'), 'utf8'))
-			);
+			await Review.create(JSON.parse(fs.readFileSync(path.join(__dirname, '../dev-data/data/reviews.json'), 'utf8')));
 			console.log('Done');
 		}
 	}

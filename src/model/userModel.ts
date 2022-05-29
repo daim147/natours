@@ -1,11 +1,12 @@
-import mongoose, { Model } from 'mongoose';
+import { type Aggregate, Schema, type Query, model, type Model } from 'mongoose';
+
 import crypto from 'crypto';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import { createHash, getFieldsFromSchemas, getRequiredFromSchemas } from '../utils';
 import { UserInstanceMethods, UserInterface, userRole } from '../interfaces';
 //schema validation is just for inputting data
-const userSchema = new mongoose.Schema<UserInterface, Model<UserInterface, {}, UserInstanceMethods>>({
+const userSchema = new Schema<UserInterface, Model<UserInterface, {}, UserInstanceMethods>>({
 	name: {
 		type: String,
 		required: [true, 'Name is required'],
@@ -71,7 +72,7 @@ userSchema.pre('save', async function (next) {
 	}
 });
 
-userSchema.pre(/^find/, function (this: mongoose.Query<any, any, {}, any>, next) {
+userSchema.pre(/^find/, function (this: Query<any, any, {}, any>, next) {
 	this.find({ active: { $ne: false } });
 	next();
 });
@@ -93,6 +94,6 @@ userSchema.methods.createPasswordResetToken = function (this: UserInterface) {
 	this.passwordResetTokenExpire = new Date(Date.now() + 10 * 60 * 1000);
 	return token;
 };
-export const User = mongoose.model<UserInterface, Model<UserInterface, {}, UserInstanceMethods>>('User', userSchema);
+export const User = model<UserInterface, Model<UserInterface, {}, UserInstanceMethods>>('User', userSchema);
 export const userRequired: string[] = getRequiredFromSchemas(userSchema);
 export const userFields: string[] = getFieldsFromSchemas(userSchema);

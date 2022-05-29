@@ -1,4 +1,4 @@
-import './RootController';
+import './ViewController';
 import './TourController';
 import './ReviewController';
 import './UserController';
