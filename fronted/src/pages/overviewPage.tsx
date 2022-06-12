@@ -37,19 +37,19 @@ const OverviewPage = () => {
 							<p className='card__text'>{tour.summary}</p>
 							<div className='card__data'>
 								<svg className='card__icon'>
-									<use xlinkHref={`../assets/img/icons.svg#icon-map-pin`}></use>
+									<use xlinkHref={`/img/icons.svg#icon-map-pin`}></use>
 								</svg>
 								<span>{tour.startLocation.description}</span>
 							</div>
 							<div className='card__data'>
 								<svg className='card__icon'>
-									<use xlinkHref={`../assets/img/icons.svg#icon-calendar`}></use>
+									<use xlinkHref={`/img/icons.svg#icon-calendar`}></use>
 								</svg>
 								<span>{toSimpleDate(tour.startDates[0])}</span>
 							</div>
 							<div className='card__data'>
 								<svg className='card__icon'>
-									<use xlinkHref={`../assets/img/icons.svg#icon-flag`}></use>
+									<use xlinkHref={`/img/icons.svg#icon-flag`}></use>
 								</svg>
 								<span>{tour.locations.length} stops</span>
 							</div>
@@ -68,9 +68,9 @@ const OverviewPage = () => {
 							</p>
 							<p className='card__ratings'>
 								<span className='card__footer-value'>{tour.ratingsAverage}</span>
-								<span className='card__footer-text'>{tour.ratingsQuantity}</span>
+								<span className='card__footer-text'> ratings({tour.ratingsQuantity})</span>
 							</p>
-							<Link to={`/tour/reviews`} className='btn btn--green btn--small'>
+							<Link to={`/tour/${tour.slug}`} className='btn btn--green btn--small'>
 								Details
 							</Link>
 						</div>

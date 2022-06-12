@@ -1,14 +1,9 @@
 import axios from 'axios';
-import { useQuery } from 'react-query';
 import { apiVersion } from '../utils';
 import { Avatar, Divider, List, Skeleton } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 const Reviews = () => {
-	// const result = useQuery({
-	// 	queryKey: 'reviews',
-	// 	queryFn: () => axios.get(`${apiVersion}/reviews`),
-	// });
 	const [loading, setLoading] = useState(false);
 	let [page, setPage] = useState(1);
 	const [data, setData] = useState<any[]>([]);

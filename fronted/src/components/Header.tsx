@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useTypeSelector } from '../hooks/useTypedSelector';
 import { api } from '../utils';
 
@@ -6,13 +7,13 @@ const Header = () => {
 	return (
 		<header className='header'>
 			<nav className='nav nav--tours'>
-				<a href='/overview.html' className='nav__el'>
+				<Link to='/' className='nav__el'>
 					All tours
-				</a>
+				</Link>
 				<form className='nav__search'>
 					<button className='nav__search-btn'>
 						<svg>
-							<use xlinkHref='img/icons.svg#icon-search'></use>
+							<use xlinkHref='/img/icons.svg#icon-search'></use>
 						</svg>
 					</button>
 					<input type='text' placeholder='Search tours' className='nav__search-input' />

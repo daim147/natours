@@ -193,6 +193,15 @@ class TourController {
 	}
 	// @get('/:id/:name?')
 	//putting params route at the end so that if /tours/* route that can be register before it other wise every thing after /tours/* will be routed to this route
+	@get('/slug/:slug')
+	async getToursPage(req: Request, res: Response) {
+		console.log('HERE');
+		const tour = await Tour.find({ slug: req.params.slug }).populate({
+			path: 'reviews',
+			select: 'review rating user',
+		});
+		res.status(200).jsend.success({ result: tour });
+	}
 	@get('/:id')
 	@use(urlSearchParamsValidator([], ['select']))
 	@use(paramsValidator('id')) //check if there is specified params here we don't need it but just for example'

@@ -25,14 +25,6 @@ class RootController {
 			tour,
 		});
 	}
-	@get('/tours/:slug')
-	async getToursPage(req: Request, res: Response) {
-		const tour = await Tour.find({ slug: req.params.slug }).populate({
-			path: 'reviews',
-			select: 'review rating user',
-		});
-		res.status(200).json(tour);
-	}
 	@get('/login')
 	async getLogin(req: Request, res: Response) {
 		res.status(200).render('login', {
