@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 //@ts-ignore
 import mapboxgl from 'mapbox-gl';
-import { apiVersion, toSimpleDate } from '../utils';
+import { apiVersion, random, toSimpleDate } from '../utils';
 
 const TourPage = () => {
 	const param = useParams();
@@ -22,35 +22,39 @@ const TourPage = () => {
 		});
 	}, []);
 	useEffect(() => {
-		if (map.current || !data) return; // initialize map only once
-		map.current = new mapboxgl.Map({
-			container: mapContainer.current,
-			style: 'mapbox://styles/husnainsyed/cl3rv3lwh000b15muqtx740nw',
-			accessToken:
-				'pk.eyJ1IjoiaHVzbmFpbnN5ZWQiLCJhIjoiY2t0M2phdDQwMHhvdTJvcGs0OHd5Z3BqdiJ9.miHdhSCLdpugNWmgUtgPtw',
-			scrollZoom: false,
-		});
-		data.locations.forEach((loc: any) => {
-			new mapboxgl.Marker({
-				anchor: 'bottom',
-			})
-				.setLngLat(loc.coordinates)
-				.setPopup(new mapboxgl.Popup().setHTML(`<p>Day ${loc.day}: ${loc.description}</p>`))
-				.addTo(map.current)
-				.togglePopup();
-		});
-		//@ts-ignore
-		map.current.fitBounds(
-			data.locations.map((loc: any) => loc.coordinates),
-			{
-				padding: {
-					top: 300,
-					bottom: 300,
-					left: 500,
-					right: 500,
-				},
-			}
-		);
+		try {
+			if (map.current || !data) return; // initialize map only once
+			map.current = new mapboxgl.Map({
+				container: mapContainer.current,
+				style: 'mapbox://styles/husnainsyed/cl3rv3lwh000b15muqtx740nw',
+				accessToken:
+					'pk.eyJ1IjoiaHVzbmFpbnN5ZWQiLCJhIjoiY2t0M2phdDQwMHhvdTJvcGs0OHd5Z3BqdiJ9.miHdhSCLdpugNWmgUtgPtw',
+				scrollZoom: false,
+			});
+			data.locations.forEach((loc: any) => {
+				new mapboxgl.Marker({
+					anchor: 'bottom',
+				})
+					.setLngLat(loc.coordinates)
+					.setPopup(new mapboxgl.Popup().setHTML(`<p>Day ${loc.day}: ${loc.description}</p>`))
+					.addTo(map.current)
+					.togglePopup();
+			});
+			//@ts-ignore
+			map.current.fitBounds(
+				data.locations.map((loc: any) => loc.coordinates),
+				{
+					padding: {
+						top: 300,
+						bottom: 300,
+						left: 500,
+						right: 500,
+					},
+				}
+			);
+		} catch (e) {
+			console.error(e);
+		}
 	});
 	if (result.isLoading) {
 		return <h1>Loading...</h1>;
@@ -112,7 +116,7 @@ const TourPage = () => {
 						<div className='overview-box__group'>
 							<h2 className='heading-secondary ma-bt-lg'>Your tour guides</h2>
 							{data.guides.map((guide: any, i: number) => (
-								<div className='overview-box__detail' key={guide.role + i}>
+								<div className='overview-box__detail' key={guide.role + i + random()}>
 									<img
 										src={`/img/users/${guide.photo}`}
 										alt={`${guide.name}`}
@@ -135,7 +139,7 @@ const TourPage = () => {
 				<div className='description-box'>
 					<h2 className='heading-secondary ma-bt-lg'>About the park camper tour</h2>
 					{data.description.split('\n').map((text: string, i: number) => (
-						<p className='description__text' key={`description__text ${i}`}>
+						<p className='description__text' key={`description__text ${i} ${random()}`}>
 							{text}
 						</p>
 					))}
@@ -144,7 +148,7 @@ const TourPage = () => {
 
 			<section className='section-pictures'>
 				{data.images.map((image: any, i: number) => (
-					<div className='picture-box' key={`${data.name} ${i + 1}`}>
+					<div className='picture-box' key={`${data.name} ${i + 1} ${random()}`}>
 						<img
 							className={`picture-box__img picture-box__img--${i + 1}`}
 							src={`/img/tours/${image}`}
@@ -159,7 +163,7 @@ const TourPage = () => {
 			<section className='section-reviews'>
 				<div className='reviews'>
 					{data.reviews?.map((review: any, i: number) => (
-						<div className='reviews__card' key={review.review}>
+						<div className='reviews__card' key={review.review + random()}>
 							<div className='reviews__avatar'>
 								<img
 									src={`/img/users/${review.user.photo}`}
@@ -173,7 +177,7 @@ const TourPage = () => {
 							<div className='reviews__rating'>
 								{[1, 2, 3, 4, 5].map((i) => (
 									<svg
-										key={review.rating + i}
+										key={review.rating + i + random()}
 										className={`reviews__star reviews__star--${
 											review.rating >= i ? 'active' : 'inactive'
 										}`}
