@@ -4,7 +4,7 @@ import { createHash, generateTokenAndSend, sendEmail } from '../utils';
 import { API } from '../enums';
 import { CustomError } from '../interfaces';
 import { User, userRequired } from '../model/userModel';
-import { controller, patch, post, use } from './decorators';
+import { controller, get, patch, post, use } from './decorators';
 import { bodyValidator, jwtVerification, paramsValidator } from './middlewares';
 
 @controller(`${API.start}auth`)
@@ -86,12 +86,12 @@ class AuthController {
 		generateTokenAndSend(user, 201, res);
 	}
 
-	@patch('/updatePassword')
+	@patch('/updateMyPassword')
 	@use(
 		jwtVerification,
 		bodyValidator({ required: true, values: ['currentPassword', 'password', 'passwordConfirmation'] })
 	)
-	async updatePassWord(req: Request, res: Response, next: NextFunction) {
+	async updateMyPassword(req: Request, res: Response, next: NextFunction) {
 		//1) Get user from collection
 		const user = await User.findById(req.user._id).select('+password');
 		//2) Check posted password is correct
@@ -105,5 +105,14 @@ class AuthController {
 		await user.save();
 		//4) Log user in and send JWT
 		generateTokenAndSend(user, 200, res);
+	}
+
+	@get('/logout')
+	async logout(_req: Request, res: Response) {
+		res.cookie('jwt', 'loggedout', {
+			expires: new Date(Date.now() + 10 * 1000),
+			httpOnly: true,
+		});
+		res.status(200).jsend.success('Logged out successfully!');
 	}
 }

@@ -5,7 +5,7 @@ import nodemailer, { type SendMailOptions } from 'nodemailer';
 import type { Response } from 'express';
 import crypto from 'crypto';
 
-import { UserInterface } from './interfaces';
+import { CustomError, UserInterface } from './interfaces';
 
 export const getRequiredFromSchemas = <T extends { paths: { [key: string]: SchemaType<any> } }>(
 	schema: T
@@ -89,7 +89,7 @@ export const verifyToken = <T>(token: string, secret: Secret): Promise<T> => {
 			if (!err) {
 				resolve(decode as T);
 			} else {
-				reject(err);
+				reject(new CustomError('Invalid Token! Please Login again', 401));
 			}
 		});
 	});

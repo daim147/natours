@@ -8,10 +8,14 @@
 		"start:run:dev": "NODE_ENV=development nodemon build/index.js",
 		"start:run:prod": "NODE_ENV=production nodemon build/index.js",
 		"debug": "ndb index.ts",
-		"start:dev": "concurrently 'npm run start:build' 'npm run start:run:dev' ",
-		"start:prod": "concurrently 'npm run start:build' 'npm run start:run:prod'"
+		"watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+		"build:js": "parcel build ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+		"start:dev": "concurrently 'npm run start:build' 'npm run start:run:dev' 'npm run watch:js'",
+		"start:prod": "concurrently 'npm run start:build' 'npm run start:run:prod' 'npm run build:js'"
 	},
 	"dependencies": {
+		"@babel/polyfill": "^7.12.1",
+		"axios": "^0.27.2",
 		"bcryptjs": "^2.4.3",
 		"concurrently": "^7.2.0",
 		"cookie-parser": "^1.4.6",
@@ -56,6 +60,7 @@
 		"eslint-plugin-prettier": "^4.0.0",
 		"eslint-plugin-react": "^7.29.4",
 		"http-proxy-middleware": "^2.0.6",
+		"parcel-bundler": "^1.12.5",
 		"prettier": "^2.6.2",
 		"typescript-cp": "^0.1.5"
 	}
