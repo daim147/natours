@@ -15,7 +15,7 @@ export const updateSettings = async (data, type) => {
 		console.log(res, data);
 		if (res.data.status === 'success') {
 			showAlert('success', `${type.toUpperCase()} updated successfully!`);
-			if (type === 'password') location.reload(true);
+			location.reload(true);
 		}
 	} catch (err) {
 		showAlert('error', err.response.data.message);

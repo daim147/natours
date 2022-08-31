@@ -38,6 +38,7 @@ const userSchema = new Schema<UserInterface, Model<UserInterface, {}, UserInstan
 	},
 	photo: {
 		type: String,
+		default: 'default.jpg',
 	},
 	passwordChangeAt: {
 		type: Date,

@@ -7666,7 +7666,7 @@ module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],"../../node_modules/buffer/index.js":[function(require,module,exports) {
+},{}],"../../node_modules/node-libs-browser/node_modules/buffer/index.js":[function(require,module,exports) {
 
 var global = arguments[3];
 /*!
@@ -9459,7 +9459,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":"../../node_modules/base64-js/index.js","ieee754":"../../node_modules/ieee754/index.js","isarray":"../../node_modules/isarray/index.js","buffer":"../../node_modules/buffer/index.js"}],"../../node_modules/axios/lib/helpers/toFormData.js":[function(require,module,exports) {
+},{"base64-js":"../../node_modules/base64-js/index.js","ieee754":"../../node_modules/ieee754/index.js","isarray":"../../node_modules/isarray/index.js","buffer":"../../node_modules/node-libs-browser/node_modules/buffer/index.js"}],"../../node_modules/axios/lib/helpers/toFormData.js":[function(require,module,exports) {
 var Buffer = require("buffer").Buffer;
 'use strict';
 
@@ -9534,7 +9534,7 @@ function toFormData(obj, formData) {
 
 module.exports = toFormData;
 
-},{"../utils":"../../node_modules/axios/lib/utils.js","buffer":"../../node_modules/buffer/index.js"}],"../../node_modules/axios/lib/core/settle.js":[function(require,module,exports) {
+},{"../utils":"../../node_modules/axios/lib/utils.js","buffer":"../../node_modules/node-libs-browser/node_modules/buffer/index.js"}],"../../node_modules/axios/lib/core/settle.js":[function(require,module,exports) {
 'use strict';
 
 var AxiosError = require('./AxiosError');
@@ -11238,7 +11238,7 @@ var logout = /*#__PURE__*/function () {
 
           case 3:
             res = _context2.sent;
-            if (res.data.status === 'success') location.reload(true);
+            if (res.data.status === 'success') location.assign('/login');
             _context2.next = 11;
             break;
 
@@ -11307,7 +11307,7 @@ var updateSettings = /*#__PURE__*/function () {
 
             if (res.data.status === 'success') {
               (0, _alerts.showAlert)('success', "".concat(type.toUpperCase(), " updated successfully!"));
-              if (type === 'password') location.reload(true);
+              location.reload(true);
             }
 
             _context.next = 12;
@@ -11637,13 +11637,11 @@ if (logOutBtn) logOutBtn.addEventListener('click', _login.logout);
 if (userDataForm) userDataForm.addEventListener('submit', function (e) {
   e.preventDefault();
   var form = new FormData();
+  var photo = document.getElementById('photo').files[0];
   form.append('name', document.getElementById('name').value);
   form.append('email', document.getElementById('email').value);
-  form.append('photo', document.getElementById('photo').files[0]);
-  (0, _updateSettings.updateSettings)({
-    name: document.getElementById('name').value,
-    email: document.getElementById('email').value
-  }, 'data');
+  photo && form.append('photo', document.getElementById('photo').files[0]);
+  (0, _updateSettings.updateSettings)(form, 'data');
 });
 if (userPasswordForm) userPasswordForm.addEventListener('submit', /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
@@ -11715,7 +11713,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55196" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60255" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

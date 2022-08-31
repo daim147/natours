@@ -30,7 +30,7 @@ export const logout = async () => {
 			method: 'GET',
 			url: '/api/v1/auth/logout',
 		});
-		if (res.data.status === 'success') location.reload(true);
+		if (res.data.status === 'success') location.assign('/login');
 	} catch (err) {
 		console.log(err.response);
 		showAlert('error', 'Error logging out! Try again.');

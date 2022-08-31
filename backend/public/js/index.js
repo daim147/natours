@@ -33,14 +33,12 @@ if (userDataForm)
 	userDataForm.addEventListener('submit', (e) => {
 		e.preventDefault();
 		const form = new FormData();
+		const photo = document.getElementById('photo').files[0];
 		form.append('name', document.getElementById('name').value);
 		form.append('email', document.getElementById('email').value);
-		form.append('photo', document.getElementById('photo').files[0]);
+		photo && form.append('photo', document.getElementById('photo').files[0]);
 
-		updateSettings(
-			{ name: document.getElementById('name').value, email: document.getElementById('email').value },
-			'data'
-		);
+		updateSettings(form, 'data');
 	});
 
 if (userPasswordForm)

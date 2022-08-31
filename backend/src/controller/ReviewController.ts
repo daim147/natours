@@ -30,6 +30,7 @@ class ReviewsController {
 	async updateReview(req: Request, res: Response, next: NextFunction) {
 		await updateOne(Review, req, res, next);
 	}
+
 	@post('/')
 	@use(
 		restrictTo('admin', 'user'),

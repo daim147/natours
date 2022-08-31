@@ -4,8 +4,14 @@ import { API } from '../enums';
 import { User, userFields } from '../model/userModel';
 import { controller, createRouterMiddlewareBefore, del, get, patch, use } from './decorators';
 import { deleteOne, getAll, getOne, updateOne } from './crudDelegators';
-import { bodyValidator, jwtVerification, urlSearchParamsValidator } from './middlewares';
-import { restrictTo } from './middlewares';
+import {
+	bodyValidator,
+	jwtVerification,
+	uploadUserPhoto,
+	urlSearchParamsValidator,
+	restrictTo,
+	resizeUserPhoto,
+} from './middlewares';
 
 @controller(`${API.start}user`)
 @createRouterMiddlewareBefore(jwtVerification)
@@ -22,6 +28,7 @@ class UserController {
 		req.params.id = req.user._id;
 		await getOne(User, req, res, next);
 	}
+
 	@get('/:id')
 	@use(restrictTo('admin'), urlSearchParamsValidator([], ['select']))
 	async getUser(req: Request, res: Response, next: NextFunction) {
@@ -33,9 +40,12 @@ class UserController {
 		bodyValidator(
 			{ required: false, values: userFields },
 			{ required: true, values: ['password', 'passwordConfirmation'] }
-		)
+		),
+		uploadUserPhoto,
+		resizeUserPhoto
 	)
-	async updateMe(req: Request, res: Response, next: NextFunction) {
+	async updateMe(req: Request, res: Response) {
+		if (req.file) req.body.photo = req.file.filename;
 		const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, {
 			runValidators: true,
 			new: true,
@@ -44,15 +54,17 @@ class UserController {
 	}
 
 	@del('/deleteMe')
-	async deleteMe(req: Request, res: Response, next: NextFunction) {
+	async deleteMe(req: Request, res: Response) {
 		await User.findByIdAndUpdate(req.user._id, { active: false });
 		res.status(204).jsend.success('User deleted successfully');
 	}
+
 	@del('/:id')
 	@use(restrictTo('admin'))
 	async deleteUser(req: Request, res: Response, next: NextFunction) {
 		await deleteOne(User, req, res, next);
 	}
+
 	@patch('/:id')
 	@use(restrictTo('admin'), bodyValidator({ required: false, values: userFields })) //when pass false and value every body properties should be in values
 	async updateUser(req: Request, res: Response, next: NextFunction) {

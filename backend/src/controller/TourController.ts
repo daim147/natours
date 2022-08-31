@@ -13,7 +13,15 @@ import {
 	createRouterMiddlewareAfter,
 } from './decorators';
 import { API } from '../enums';
-import { bodyValidator, paramsValidator, urlSearchParamsValidator, jwtVerification, restrictTo } from './middlewares';
+import {
+	bodyValidator,
+	paramsValidator,
+	urlSearchParamsValidator,
+	jwtVerification,
+	restrictTo,
+	uploadTourImages,
+	resizeTourImages,
+} from './middlewares';
 import { Tour, tourRequired, tourFields } from '../model/tourModel';
 import { objectToUrlParamString } from '../utils';
 import reviewRouter from './ReviewController';
@@ -41,16 +49,22 @@ class TourController {
 	}
 
 	@patch('/:id')
-	@use(bodyValidator({ required: false, values: tourFields })) //when pass false and value every body properties should be in values
+	@use(
+		restrictTo('admin', 'lead-guide'),
+		bodyValidator({ required: false, values: tourFields }),
+		uploadTourImages,
+		resizeTourImages
+	) //when pass false and value every body properties should be in values
 	async updateTour(req: Request, res: Response, next: NextFunction): Promise<void> {
 		await updateOne(Tour, req, res, next);
 	}
 
-	@use(restrictTo('admin'))
 	@del('/:id')
+	@use(restrictTo('admin'))
 	async deleteTour(req: Request, res: Response, next: NextFunction): Promise<void> {
 		await deleteOne(Tour, req, res, next);
 	}
+
 	@get('/top-5-cheap')
 	async getTop(req: Request, res: Response): Promise<void> {
 		const { query } = url.parse(req.url, true); //not using req.query as bcz of some manipulation express does to query
@@ -191,6 +205,7 @@ class TourController {
 		});
 		res.status(200).jsend.success({ count: results.length, results });
 	}
+
 	// @get('/:id/:name?')
 	//putting params route at the end so that if /tours/* route that can be register before it other wise every thing after /tours/* will be routed to this route
 	@get('/slug/:slug')
@@ -202,6 +217,7 @@ class TourController {
 		});
 		res.status(200).jsend.success({ result: tour });
 	}
+
 	@get('/:id')
 	@use(urlSearchParamsValidator([], ['select']))
 	@use(paramsValidator('id')) //check if there is specified params here we don't need it but just for example'

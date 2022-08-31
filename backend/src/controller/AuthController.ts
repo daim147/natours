@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-
-import { createHash, generateTokenAndSend, sendEmail } from '../utils';
+import { createHash, Email, generateTokenAndSend } from '../utils';
 import { API } from '../enums';
 import { CustomError } from '../interfaces';
 import { User, userRequired } from '../model/userModel';
@@ -13,6 +12,8 @@ class AuthController {
 	@use(bodyValidator({ required: true, values: userRequired }, { required: false, values: [] }))
 	async signup(req: Request, res: Response) {
 		const newUser = await User.create(req.body);
+		const url = `${req.protocol}://${req.get('host')}/me`;
+		await new Email(newUser, url).sendWelcome();
 		//generating token
 		generateTokenAndSend(newUser, 201, res);
 	}
@@ -45,14 +46,9 @@ class AuthController {
 		await user.save({ validateBeforeSave: false }); //it will run all the validator we specify since we remove passwordConfirmation in pre save middleware so it is not present in document right now so I disable it
 		//3) Send it to user email
 		const resetURL = `${req.protocol}://${req.get('host')}/api/v1/auth/resetPassword/${resetToken}`;
-		const text = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
 		try {
-			await sendEmail({
-				to: user.email,
-				subject: 'Your password reset token valid for 10 minutes',
-				text,
-			});
+			await new Email(user, resetURL).sendPasswordReset();
 			res.status(200).jsend.success('Token Send to email!');
 		} catch (error) {
 			//reset token if there is any error

@@ -5,3 +5,5 @@ export * from './urlSearchParamsValidator';
 export * from './jwtVerification';
 export * from './restrictTo';
 export * from './isLoggedIn';
+export * from './userPhoto';
+export * from './tourPhoto';

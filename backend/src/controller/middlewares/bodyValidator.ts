@@ -20,11 +20,6 @@ export const bodyValidator =
 					return;
 				}
 			}
-			// const removeProperties = Object.keys(req.body).filter((key) => !validators.values.includes(key));
-			// if (removeProperties.length) {
-			// 	removeProperty.required = true;
-			// 	removeProperty.values = removeProperties;
-			// }
 		} else {
 			Object.keys(req.body).forEach((key) => {
 				if (!validators.values.includes(key)) {
