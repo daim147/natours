@@ -5,6 +5,7 @@ import { Tour } from '../model/tourModel';
 import { controller, get, post, use } from './decorators';
 import { NextFunction } from 'express';
 import { jwtVerification, isLoggedIn } from './middlewares';
+import { Booking } from '../model/bookingModel';
 
 @controller('/')
 class RootController {
@@ -36,7 +37,6 @@ class RootController {
 	}
 
 	@get('/login')
-	@use(isLoggedIn)
 	async getLogin(req: Request, res: Response) {
 		res.status(200).render('login', {
 			title: 'Login',
@@ -48,6 +48,16 @@ class RootController {
 	async getAccount(req: Request, res: Response) {
 		res.status(200).render('account', {
 			title: 'Your account',
+		});
+	}
+
+	@get('/my-tours')
+	@use(jwtVerification)
+	async getMyBookings(req: Request, res: Response, next: NextFunction) {
+		const bookings = await Booking.find({ user: req.user?._id });
+		res.status(200).render('overview', {
+			title: 'All Tours',
+			tours: bookings.map((el) => el.tour),
 		});
 	}
 	// @get('/signUp')

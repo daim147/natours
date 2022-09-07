@@ -43,7 +43,6 @@ export const resizeTourImages = catchAsync(async (req: Request, _: Response, nex
 			req.body.images.push(image);
 		})
 	);
-	console.log(req.body.image);
 	next();
 });
 

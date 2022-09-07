@@ -18,6 +18,7 @@ import jsend from 'jsend';
 import { Server } from 'http';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import compression from 'compression';
 
 import { API } from './enums';
 import { Tour } from './model/tourModel';
@@ -71,6 +72,8 @@ export class App {
 				req.requestTime = new Date().toISOString();
 				next();
 			});
+			//Compressing Response
+			App.inst.use(compression());
 
 			//Prevent HTTP Parameters Pollution
 			//App.inst.use(hpp()); //can be use but I have already implemented some kind of functionality in handleNonFilterProperty function

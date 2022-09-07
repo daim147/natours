@@ -13,7 +13,6 @@ export const jwtVerification = catchAsync(async (req, res, next) => {
 	} else if (req.cookies.jwt) {
 		token = req.cookies.jwt;
 	}
-	console.log('TOKEN', token);
 	if (!token) {
 		return next(new CustomError('You are not logged in to get access', 401));
 	}
