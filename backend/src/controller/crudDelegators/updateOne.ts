@@ -12,8 +12,6 @@ export const updateOne = async function <T>(
 		new: true,
 		runValidators: true,
 	});
-	if (!doc) {
-		if (!doc) return next(new CustomError('Invalid Id', 404));
-	}
+	if (!doc) return next(new CustomError('Invalid Id', 404));
 	res.status(200).jsend.success({ result: doc });
 };
